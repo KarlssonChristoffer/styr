@@ -8,6 +8,8 @@ Protocol) in the background, writes everything that happens to a local log, and 
 running, what is waiting on me and what got finished. It is a personal project that I use every
 day, built largely with AI agents working under the rules in [CLAUDE.md](CLAUDE.md).
 
+The project is nowhere close to done and has a lot work left, feel free to fork and try it out. Create a new feature or fix a bug using Claude and create a PR!
+
 ![Styr: the inbox of threads on the left, a new thread on the right with the Run on menu open](docs/images/new-thread.png)
 
 The app itself is called Hub. That is the name used in the code, the docs and the Start menu
