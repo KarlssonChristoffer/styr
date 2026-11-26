@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#1a1918">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="/phone/manifest.webmanifest">
+<link rel="icon" href="/phone/icon.svg">
+<link rel="apple-touch-icon" href="/phone/icon-180.png">
+<meta name="apple-mobile-web-app-title" content="Hub">
+<title>Hub</title>
+<style>
+/* The app's tokens (app/src/app.css): dark, calm and dense, colour only for state. */
+:root {
+  --bg: #1a1918; --surface: #211f1e; --surface-2: #242220; --line: #2a2826; --line-strong: #3a3734;
+  --text: #ece8e2; --text-2: #d3cfc8; --text-3: #bdb8b0; --muted: #958f88;
+  --accent: #a5abee; --accent-bg: rgba(165, 171, 238, 0.15);
+  --green: #84c29a; --amber: #ddaa5e; --amber-bg: rgba(221, 170, 94, 0.16); --red: #e5806f; --red-bg: rgba(229, 128, 111, 0.1);
+  --radius: 8px;
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 15px/1.45 var(--font); -webkit-text-size-adjust: 100%; }
+body { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; overscroll-behavior-y: none; }
+a, button, summary, textarea { touch-action: manipulation; }
+.reply, .user, .ask pre, .err { -webkit-touch-callout: default; -webkit-user-select: text; user-select: text; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.top { position: -webkit-sticky; position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 10px; padding: calc(env(safe-area-inset-top) + 10px) 16px 10px; background: var(--bg); border-bottom: 1px solid var(--line); min-height: 52px; }
+.top h1 { margin: 0; font-size: 16px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top .sub { color: var(--muted); font-size: 12px; font-weight: 400; display: block; overflow: hidden; text-overflow: ellipsis; }
+.back { width: 32px; height: 32px; margin-left: -8px; display: grid; place-items: center; color: var(--text-3); font-size: 22px; }
+.live { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex: none; }
+.live.on { background: var(--green); }
+main { flex: 1; }
+.empty, .note { color: var(--muted); padding: 32px 20px; text-align: center; }
+.note p { margin: 0 0 10px; }
+.section { padding: 14px 16px 4px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+.row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 16px; border-bottom: 1px solid var(--line); width: 100%; text-align: left; }
+.row:active { background: var(--surface); }
+.row .dot { margin-top: 7px; }
+.row .main { flex: 1; min-width: 0; }
+.row .title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row.unread .title { font-weight: 600; }
+.row .meta { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .when { color: var(--muted); font-size: 12px; flex: none; margin-top: 2px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: transparent; border: 1px solid var(--line-strong); }
+.dot.running { background: var(--accent); border-color: var(--accent); animation: pulse 1.4s ease-in-out infinite; }
+.dot.waiting_on_you { background: var(--amber); border-color: var(--amber); }
+.dot.error { background: var(--red); border-color: var(--red); }
+.dot.done { background: var(--green); border-color: var(--green); }
+@keyframes pulse { 50% { opacity: 0.35; } }
+.more { display: block; width: 100%; padding: 14px; color: var(--muted); font-size: 13px; }
+
+.log { padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.user { align-self: flex-end; max-width: 88%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px 12px 4px 12px; padding: 8px 11px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.hubnote { color: var(--muted); font-size: 12px; }
+.reply { overflow-wrap: anywhere; color: var(--text-2); }
+.reply p { margin: 0 0 8px; white-space: pre-wrap; }
+.reply p:last-child { margin-bottom: 0; }
+.reply code { font: 13px var(--mono); background: var(--surface); padding: 1px 4px; border-radius: 4px; }
+.reply pre { font: 12.5px/1.4 var(--mono); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px; overflow-x: auto; margin: 0 0 8px; white-space: pre; }
+.work { color: var(--muted); font-size: 13px; }
+.work summary { list-style: none; cursor: pointer; display: flex; gap: 6px; align-items: baseline; min-height: 32px; }
+.work summary::-webkit-details-marker { display: none; }
+.work summary::before { content: "›"; display: inline-block; width: 10px; transition: transform 0.15s; }
+.work[open] summary::before { transform: rotate(90deg); }
+.work ul { margin: 6px 0 0 16px; padding: 0; list-style: none; }
+.work li { padding: 2px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.work li.failed { color: var(--red); }
+.ask { border: 1px solid var(--amber); background: var(--amber-bg); border-radius: var(--radius); padding: 10px 12px; }
+.ask.done { border-color: var(--line); background: none; color: var(--muted); padding: 6px 10px; font-size: 13px; }
+.ask .what { font-weight: 600; margin-bottom: 4px; overflow-wrap: anywhere; }
+.ask pre { font: 12.5px var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; margin: 4px 0 8px; color: var(--text-3); }
+.ask .options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.btn { -webkit-appearance: none; appearance: none; border: 1px solid var(--line-strong); background: var(--surface); border-radius: var(--radius); padding: 9px 14px; min-height: 40px; }
+.btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
+.btn.armed { background: var(--red); border-color: var(--red); color: var(--bg); }
+.btn:disabled { opacity: 0.5; }
+.panic { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 10px 16px 0; }
+.panic.on { margin: 10px 16px 0; padding: 10px 12px; border: 1px solid var(--amber); background: var(--amber-bg); border-radius: var(--radius); justify-content: space-between; }
+.panic .btn { min-height: 36px; padding: 6px 12px; }
+.err { color: var(--red); background: var(--red-bg); border-radius: var(--radius); padding: 6px 10px; font-size: 13px; overflow-wrap: anywhere; }
+.status { color: var(--muted); font-size: 13px; display: flex; gap: 8px; align-items: center; }
+
+/* The sticky box is the wrapper: a sticky child inside a wrapper exactly its own height never sticks,
+   so on a long thread the composer sat at the end of the page and was gone when scrolled up. */
+#bottom { position: -webkit-sticky; position: sticky; bottom: 0; z-index: 2; background: var(--bg); }
+.composer { background: var(--bg); border-top: 1px solid var(--line); padding: 8px 12px calc(env(safe-area-inset-bottom) + 8px); display: flex; gap: 8px; align-items: flex-end; }
+.composer textarea { flex: 1; min-width: 0; -webkit-appearance: none; appearance: none; resize: none; font: inherit; font-size: 16px; color: var(--text); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 12px; padding: 9px 12px; max-height: 40vh; min-height: 42px; outline: none; }
+.composer textarea:focus { border-color: var(--muted); }
+.composer .btn { border-radius: 12px; min-height: 42px; }
+.toast { position: fixed; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 76px); z-index: 5; }
+.menu { color: var(--muted); font-size: 13px; padding: 24px 16px calc(env(safe-area-inset-bottom) + 24px); text-align: center; }
+.menu button { text-decoration: underline; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="top" id="top"></div>
+<main id="main"></main>
+<div id="bottom"></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+"use strict";
+const KEY = "hub.phone.token";
+const MACHINE = "hub.phone.machine";
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} },
+};
+let token = store.get(KEY);
+// The other machines this phone follows by itself, so they stay in the list while the machine it
+// paired with sleeps: { id, name, url, token } kept here, plus a live socket each. Their threads
+// win over the copies the paired machine relays; when one cannot be reached, those copies stand in
+// and calls about its threads go through the paired machine.
+const OTHERS = "hub.phone.others";
+let others = new Map();
+try { for (const m of JSON.parse(store.get(OTHERS) || "[]")) others.set(m.id, { ...m, socket: null, live: false, retry: 1000, threads: new Map() }); } catch {}
+function saveOthers() {
+  store.set(OTHERS, JSON.stringify([...others.values()].map(({ id, name, url, token }) => ({ id, name, url, token }))));
+}
+let homeThreads = new Map();
+// Which machine each thread lives on: an id from `others`, or null for the paired machine.
+let owner = new Map();
+let threads = new Map();
+let open = null; // { id, events: [], last: 0, loading }
+let socket = null, live = false, retry = 1000;
+let shown = 30;
+const $ = (id) => document.getElementById(id);
+
+// Tiny DOM builder: text always goes in as text, never as markup.
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "class") el.className = v;
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat()) if (kid != null && kid !== false) el.append(kid instanceof Node ? kid : String(kid));
+  return el;
+}
+
+function toast(text) {
+  const t = $("toast");
+  t.replaceChildren(h("div", { class: "err" }, text));
+  t.hidden = false;
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => (t.hidden = true), 5000);
+}
+
+async function call(method, path, body, machine) {
+  const headers = { authorization: "Bearer " + (machine ? machine.token : token) };
+  if (body !== undefined) headers["content-type"] = "application/json";
+  const r = await fetch(machine ? machine.url + path : path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+  if (r.status === 401 && machine) {
+    // That machine no longer knows this phone; the paired one makes a new code next time.
+    dropMachine(machine.id);
+    throw new Error(machine.name + " no longer lets this phone in");
+  }
+  if (r.status === 401) {
+    forget("This phone is no longer let in. Scan a new QR code in Hub.");
+    throw new Error("not paired");
+  }
+  const text = await r.text();
+  if (!r.ok) {
+    let msg = text;
+    try { msg = JSON.parse(text).error || text; } catch {}
+    throw new Error(msg || r.statusText);
+  }
+  return text ? JSON.parse(text) : null;
+}
+
+// A call about one thread goes to the machine it lives on, or through the paired machine (which
+// passes it on) when that one cannot be reached directly.
+async function callThread(id, method, path, body) {
+  const m = others.get(owner.get(id));
+  if (m && m.live) {
+    try {
+      return await call(method, path, body, m);
+    } catch (e) {
+      if (!(e instanceof TypeError)) throw e;
+    }
+  }
+  return call(method, path, body);
+}
+
+function dropMachine(id) {
+  const m = others.get(id);
+  if (!m) return;
+  others.delete(id);
+  saveOthers();
+  if (m.socket) m.socket.close();
+  merge();
+}
+
+// Asks the paired machine for the others, and trades each new one's code for a token there.
+let discovered = 0;
+async function discover() {
+  if (!token || Date.now() - discovered < 5 * 60 * 1000) return;
+  discovered = Date.now();
+  let list;
+  try {
+    list = await call("POST", "/api/phone/machines", { have: [...others.keys()] });
+  } catch {
+    discovered = 0;
+    return;
+  }
+  for (const found of list || []) {
+    let m = others.get(found.id);
+    if (!m && found.code) {
+      try {
+        const r = await fetch(found.url + "/api/pair/redeem", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ code: found.code, name: deviceName() }),
+        });
+        if (!r.ok) continue;
+        const paired = await r.json();
+        m = { id: found.id, name: found.name, url: found.url, token: paired.token, socket: null, live: false, retry: 1000, threads: new Map() };
+        others.set(m.id, m);
+      } catch {
+        continue;
+      }
+    }
+    if (!m) continue;
+    m.name = found.name;
+    m.url = found.url;
+    connectMachine(m);
+  }
+  saveOthers();
+}
+
+function deviceName() {
+  const ua = navigator.userAgent;
+  const m = ua.match(/iPhone|iPad|Pixel[^;)]*|SM-[A-Z0-9]+|Android/);
+  return m ? m[0].trim() : "Phone";
+}
+
+async function pairFromLink() {
+  const m = location.hash.match(/pair=([A-Za-z0-9-]+)/);
+  if (!m) return;
+  // The code never stays in the address bar or the history.
+  history.replaceState(null, "", location.pathname);
+  try {
+    const r = await fetch("/api/pair/redeem", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ code: m[1], name: deviceName() }),
+    });
+    const text = await r.text();
+    if (!r.ok) {
+      let msg = text;
+      try { msg = JSON.parse(text).error; } catch {}
+      throw new Error(msg);
+    }
+    const paired = JSON.parse(text);
+    token = paired.token;
+    store.set(KEY, token);
+    store.set(MACHINE, paired.machine);
+  } catch (e) {
+    if (!token) noteScreen("That QR code did not work: " + e.message + ". Make a new one in Hub and scan it again.");
+    else toast("That QR code did not work: " + e.message);
+  }
+}
+
+function forget(why) {
+  token = null;
+  store.set(KEY, null);
+  if (socket) socket.close();
+  for (const m of others.values()) if (m.socket) m.socket.close();
+  others = new Map();
+  saveOthers();
+  noteScreen(why);
+}
+
+function noteScreen(text) {
+  $("top").replaceChildren(h("h1", {}, "Hub"));
+  $("bottom").replaceChildren();
+  $("main").replaceChildren(
+    h("div", { class: "note" },
+      h("p", {}, text || "This phone is not paired with Hub yet."),
+      h("p", {}, "On your computer, open Hub > Settings > Access and press Connect your phone. Scan the QR code with this phone's camera.")),
+  );
+}
+
+// ---- Live updates ----
+
+// The panic button's state: every agent paused, or null.
+let halt = null;
+
+function connect() {
+  if (!token || (socket && socket.readyState <= 1)) return;
+  const proto = location.protocol === "https:" ? "wss:" : "ws:";
+  const ws = new WebSocket(`${proto}//${location.host}/api/stream?token=${encodeURIComponent(token)}`);
+  socket = ws;
+  ws.onopen = () => {
+    live = true;
+    retry = 1000;
+    paintLive();
+    refresh();
+  };
+  ws.onmessage = (m) => {
+    let msg;
+    try { msg = JSON.parse(m.data); } catch { return; }
+    if (msg.type === "thread") {
+      homeThreads.set(msg.thread.id, msg.thread);
+      merge();
+    } else if (msg.type === "thread_deleted") {
+      homeThreads.delete(msg.id);
+      merge();
+    } else if (msg.type === "event") {
+      takeEvent(msg.event);
+    } else if (msg.type === "halt") {
+      halt = msg.halt;
+      schedule();
+    } else if (msg.type === "resync") {
+      refresh();
+    }
+  };
+  ws.onclose = () => {
+    live = false;
+    paintLive();
+    if (socket !== ws || !token) return;
+    socket = null;
+    setTimeout(connect, retry);
+    retry = Math.min(retry * 2, 15000);
+  };
+}
+
+function takeEvent(e) {
+  // The same event can come from the machine itself and from the paired machine's relay.
+  if (open && e.thread_id === open.id && e.seq > open.last) {
+    open.events.push(e);
+    open.last = e.seq;
+    schedule();
+  }
+}
+
+// One socket per other machine; its own threads only (one it relays from elsewhere has a host).
+function connectMachine(m) {
+  if (!token || (m.socket && m.socket.readyState <= 1)) return;
+  const ws = new WebSocket(m.url.replace(/^http/, "ws") + "/api/stream?token=" + encodeURIComponent(m.token));
+  m.socket = ws;
+  ws.onopen = () => {
+    m.live = true;
+    m.retry = 1000;
+    refreshMachine(m);
+  };
+  ws.onmessage = (msg) => {
+    let data;
+    try { data = JSON.parse(msg.data); } catch { return; }
+    if (data.type === "thread" && !data.thread.host) {
+      m.threads.set(data.thread.id, data.thread);
+      merge();
+    } else if (data.type === "thread_deleted") {
+      if (m.threads.delete(data.id)) merge();
+    } else if (data.type === "event") {
+      takeEvent(data.event);
+    } else if (data.type === "resync") {
+      refreshMachine(m);
+    }
+  };
+  ws.onclose = () => {
+    const was = m.live;
+    m.live = false;
+    if (was) merge();
+    if (m.socket !== ws || !token || !others.has(m.id)) return;
+    m.socket = null;
+    setTimeout(() => connectMachine(m), m.retry * (0.75 + Math.random() / 2));
+    m.retry = Math.min(m.retry * 2, 60000);
+  };
+}
+
+async function refreshMachine(m) {
+  try {
+    const list = await call("GET", "/api/threads", undefined, m);
+    m.threads = new Map(list.filter((t) => !t.host).map((t) => [t.id, t]));
+    merge();
+  } catch {}
+}
+
+// One list from every machine: the paired machine's own threads, then each other machine's own,
+// which replace the copies the paired machine relays for it. A machine out of reach keeps those
+// copies, so its threads stay in the list either way.
+function merge() {
+  const all = new Map();
+  owner = new Map();
+  const direct = new Map([...others.values()].filter((m) => m.live).map((m) => [m.name, m]));
+  for (const t of homeThreads.values()) {
+    if (t.host && direct.has(t.host)) continue;
+    all.set(t.id, t);
+    owner.set(t.id, null);
+  }
+  for (const m of direct.values()) {
+    for (const t of m.threads.values()) {
+      all.set(t.id, { ...t, host: m.name });
+      owner.set(t.id, m.id);
+    }
+  }
+  threads = all;
+  schedule();
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && token) {
+    connect();
+    for (const m of others.values()) connectMachine(m);
+    refresh();
+    discover();
+  }
+});
+
+async function refresh() {
+  if (!token) return;
+  try {
+    const list = await call("GET", "/api/threads");
+    homeThreads = new Map(list.map((t) => [t.id, t]));
+    halt = await call("GET", "/api/halt").catch(() => halt);
+    merge();
+  } catch (e) {
+    // The paired machine may sleep; the others still answer.
+    if (token && ![...others.values()].some((m) => m.live)) toast(e.message);
+  }
+  try {
+    for (const m of others.values()) if (m.live) refreshMachine(m);
+    if (open) {
+      const after = open.last;
+      const more = await callThread(open.id, "GET", `/api/threads/${encodeURIComponent(open.id)}/events?after=${after}&limit=50000`);
+      if (open && open.last === after) {
+        open.events.push(...more);
+        if (more.length) open.last = more[more.length - 1].seq;
+      }
+    }
+    schedule();
+  } catch (e) {
+    if (token) toast(e.message);
+  }
+}
+
+let pending = false;
+function schedule() {
+  if (pending) return;
+  pending = true;
+  setTimeout(() => {
+    pending = false;
+    render();
+  }, 120);
+}
+
+window.addEventListener("hashchange", route);
+
+async function route() {
+  if (!token) return;
+  const m = location.hash.match(/^#\/t\/(.+)$/);
+  const id = m ? decodeURIComponent(m[1]) : null;
+  if (!id) {
+    open = null;
+    render(true);
+    return;
+  }
+  if (open && open.id === id) return;
+  open = { id, events: [], last: 0, loading: true, stick: true };
+  render(true);
+  try {
+    const events = await callThread(id, "GET", `/api/threads/${encodeURIComponent(id)}/events?after=0&limit=50000`);
+    if (!open || open.id !== id) return;
+    open.events = events.concat(open.events.filter((e) => e.seq > (events.at(-1)?.seq ?? 0)));
+    open.last = open.events.at(-1)?.seq ?? 0;
+    open.loading = false;
+    render();
+    window.scrollTo(0, document.body.scrollHeight);
+  } catch (e) {
+    if (open && open.id === id) {
+      open.loading = false;
+      open.failed = e.message;
+      render();
+    }
+  }
+}
+
+// ---- Shared bits ----
+
+const project = (t) => (t.cwd || "").split(/[\\/]/).filter(Boolean).pop() || t.cwd || "";
+const returned = (t) => t.returned_at ?? t.updated_at;
+const unread = (t) => t.returned_at != null && (t.seen_at == null || t.returned_at > t.seen_at);
+const needsYou = (t) => t.status === "waiting_on_you" || t.status === "error";
+function ago(ms) {
+  const s = Math.max(0, (Date.now() - ms) / 1000);
+  if (s < 60) return "now";
+  if (s < 3600) return Math.floor(s / 60) + "m";
+  if (s < 86400) return Math.floor(s / 3600) + "h";
+  return Math.floor(s / 86400) + "d";
+}
+const statusText = { running: "Working", waiting_on_you: "Needs you", error: "Failed", idle: "Idle", in_terminal: "In a terminal" };
+function dotClass(t) {
+  if (t.status === "idle" && unread(t)) return "dot done";
+  return "dot " + t.status;
+}
+
+function paintLive() {
+  const el = document.querySelector(".live");
+  if (el) {
+    el.classList.toggle("on", live || [...others.values()].some((m) => m.live));
+    el.title = live ? "Live" : "Reconnecting…";
+  }
+}
+
+function render(fresh) {
+  if (!token) return;
+  if (open) renderThread(fresh);
+  else renderList();
+  const waiting = [...threads.values()].filter((t) => !t.archived && t.status === "waiting_on_you").length;
+  document.title = waiting ? `(${waiting}) Hub` : "Hub";
+}
+
+// ---- Thread list ----
+
+function renderList() {
+  const machine = store.get(MACHINE);
+  $("top").replaceChildren(
+    h("h1", {}, "Hub", machine ? h("span", { class: "sub" }, machine) : null),
+    h("span", { class: "live" + (live ? " on" : ""), title: live ? "Live" : "Reconnecting…" }),
+  );
+  renderIdeaBox();
+  const all = [...threads.values()].filter((t) => !t.archived);
+  const byReturn = (a, b) => returned(b) - returned(a);
+  const you = all.filter(needsYou).sort(byReturn);
+  const working = all.filter((t) => !needsYou(t) && t.status === "running").sort((a, b) => (b.sent_at ?? b.updated_at) - (a.sent_at ?? a.updated_at));
+  const rest = all.filter((t) => !needsYou(t) && t.status !== "running" && t.settled_at == null).sort(byReturn);
+  const kids = [];
+  kids.push(panicButton());
+  const group = (name, list) => {
+    if (!list.length) return;
+    kids.push(h("div", { class: "section" }, name));
+    for (const t of list) kids.push(row(t));
+  };
+  group("Needs you", you);
+  group("Working", working);
+  group("Recent", rest.slice(0, shown));
+  if (rest.length > shown) kids.push(h("button", { class: "more", onclick: () => { shown += 30; render(); } }, `Show more (${rest.length - shown})`));
+  if (!all.length) kids.push(h("div", { class: "empty" }, threads.size ? "No open threads." : "Loading…"));
+  kids.push(h("div", { class: "menu" }, h("button", { onclick: () => { if (confirmForget()) forget("This phone forgot its pairing."); } }, "Forget this phone")));
+  $("main").replaceChildren(...kids);
+}
+
+// One tap pauses every agent on every machine; while paused the same place resumes them.
+function panicButton() {
+  const press = async (e) => {
+    e.currentTarget.disabled = true;
+    try {
+      const resume = !!halt;
+      // The paired machine pauses the machines it reaches; each one reached directly is told too,
+      // so the button works while the paired machine sleeps.
+      const direct = [...others.values()].filter((m) => m.live).map((m) => call("POST", resume ? "/api/halt/resume" : "/api/halt/pause", {}, m).catch(() => null));
+      const home = call("POST", resume ? "/api/halt/resume" : "/api/halt/pause", {}).catch((e) => (direct.length ? null : Promise.reject(e)));
+      const [own, ...rest] = await Promise.all([home, ...direct]);
+      halt = resume ? null : own || rest.find(Boolean) || { threads: [] };
+    } catch (err) {
+      toast(err.message);
+    }
+    render();
+  };
+  if (!halt) return h("div", { class: "panic" }, h("button", { class: "btn", onclick: press }, "Pause every agent"));
+  const turns = halt.threads.length;
+  return h("div", { class: "panic on" },
+    h("span", {}, `Every agent is paused${turns ? `; ${turns} ${turns === 1 ? "turn carries" : "turns carry"} on when resumed` : ""}.`),
+    h("button", { class: "btn primary", onclick: press }, "Resume all"));
+}
+
+function confirmForget() {
+  // A second tap rather than a dialog.
+  if (confirmForget.armed && Date.now() - confirmForget.armed < 4000) return true;
+  confirmForget.armed = Date.now();
+  toast("Tap again to forget this phone. Revoke it in Hub > Settings > Access too.");
+  return false;
+}
+
+function row(t) {
+  const meta = [project(t), t.host, statusText[t.status] && t.status !== "idle" ? statusText[t.status] : null].filter(Boolean).join(" · ");
+  return h("button", { class: "row" + (unread(t) ? " unread" : ""), onclick: () => (location.hash = "#/t/" + encodeURIComponent(t.id)) },
+    h("span", { class: dotClass(t) }),
+    h("span", { class: "main" }, h("div", { class: "title" }, t.title || "New thread"), h("div", { class: "meta" }, meta)),
+    h("span", { class: "when" }, ago(returned(t))),
+  );
+}
+
+// ---- One thread ----
+
+// Folds the log into what the phone shows: messages, replies, the work between them as one line,
+// questions, failures. The desktop's transcript (app/src/lib/transcript.ts) is the full version.
+function fold(events) {
+  const items = [];
+  const calls = new Map();
+  const asks = new Map();
+  let work = null;
+  const last = () => items[items.length - 1];
+  for (const e of events) {
+    const d = e.data || {};
+    switch (e.kind) {
+      case "user_message": {
+        work = null;
+        const hub = d.leak != null || d.customs != null || d.proof != null || d.quota != null || d.restart != null || d.watch != null || d.child != null || d.review != null;
+        items.push(hub ? { kind: "hub", text: "Hub sent the agent a note" } : { kind: "user", text: d.text || "" });
+        break;
+      }
+      case "update": {
+        const u = d.sessionUpdate;
+        if (u === "agent_message_chunk") {
+          const text = d.content && d.content.type === "text" ? d.content.text : "";
+          if (!text) break;
+          const prev = last();
+          if (prev && prev.kind === "reply") prev.text += text;
+          else items.push({ kind: "reply", text });
+          work = null;
+        } else if (u === "tool_call" || u === "tool_call_update") {
+          let call = calls.get(d.toolCallId);
+          if (!call) {
+            if (!work) {
+              work = { kind: "work", calls: [] };
+              items.push(work);
+            }
+            call = { title: d.title || "Tool", status: d.status || "pending" };
+            calls.set(d.toolCallId, call);
+            work.calls.push(call);
+          }
+          if (d.title) call.title = d.title;
+          if (d.status) call.status = d.status;
+          if (d.rawInput && typeof d.rawInput.command === "string") call.command = d.rawInput.command;
+        }
+        break;
+      }
+      case "permission_request": {
+        const call = Object.assign({}, calls.get(d.tool_call && d.tool_call.toolCallId));
+        const raw = d.tool_call && d.tool_call.rawInput;
+        const ask = {
+          kind: "ask",
+          id: d.id,
+          title: (d.tool_call && d.tool_call.title) || call.title || "The agent wants to continue",
+          command: raw && typeof raw.command === "string" ? raw.command : call.command,
+          options: d.options || [],
+          resolved: false,
+        };
+        asks.set(ask.id, ask);
+        items.push(ask);
+        work = null;
+        break;
+      }
+      case "permission_resolved": {
+        const ask = asks.get(d.id);
+        if (ask) {
+          ask.resolved = true;
+          ask.answer = d.option_id;
+        }
+        break;
+      }
+      case "error":
+        items.push({ kind: "error", text: d.message || "The engine failed" });
+        work = null;
+        break;
+      case "restart":
+        items.push({ kind: "hub", text: "Hub restarted in the middle of this turn and asked the agent to carry on" });
+        break;
+    }
+  }
+  return items;
+}
+
+const RISKY = /\brm\s+-[a-z]*[rf]|\bgit\s+(push\s+.*--force|reset\s+--hard|clean\s+-[a-z]*f)|\bdrop\s+(table|database)\b|\bmkfs\b|\bdd\s+if=|Remove-Item.*-Recurse/i;
+
+function renderThread(fresh) {
+  const t = threads.get(open.id);
+  const nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 80;
+  $("top").replaceChildren(
+    h("button", { class: "back", "aria-label": "Back", onclick: () => (location.hash = "#/") }, "‹"),
+    h("h1", {}, t ? t.title || "New thread" : "Thread", h("span", { class: "sub" }, t ? [project(t), t.host].filter(Boolean).join(" · ") : "")),
+    h("span", { class: "live" + (live ? " on" : ""), title: live ? "Live" : "Reconnecting…" }),
+  );
+  const log = h("div", { class: "log" });
+  if (open.loading) log.append(h("div", { class: "empty" }, "Loading…"));
+  else if (open.failed) log.append(h("div", { class: "err" }, open.failed));
+  const items = fold(open.events);
+  // Long threads: the last stretch is what matters on a phone.
+  const from = open.all ? 0 : Math.max(0, items.length - 120);
+  if (from > 0) log.append(h("button", { class: "more", onclick: () => { open.all = true; render(); } }, `Show ${from} earlier`));
+  for (const item of items.slice(from)) log.append(view(item));
+  if (t && t.status === "running") log.append(h("div", { class: "status" }, h("span", { class: "dot running" }), "Working…"));
+  if (t && t.status === "in_terminal") log.append(h("div", { class: "status" }, "Taken over in a terminal. Messages wait until it is handed back."));
+  $("main").replaceChildren(log);
+  renderComposer(t, fresh);
+  if (nearBottom || fresh) window.scrollTo(0, document.body.scrollHeight);
+}
+
+function view(item) {
+  switch (item.kind) {
+    case "user": return h("div", { class: "user" }, item.text);
+    case "hub": return h("div", { class: "hubnote" }, item.text);
+    case "reply": return h("div", { class: "reply" }, prose(item.text));
+    case "error": return h("div", { class: "err" }, item.text);
+    case "work": {
+      const failed = item.calls.filter((c) => c.status === "failed").length;
+      const lastCall = item.calls[item.calls.length - 1];
+      const label = `${item.calls.length} ${item.calls.length === 1 ? "step" : "steps"}${failed ? `, ${failed} failed` : ""} · ${lastCall.title}`;
+      const el = h("details", { class: "work" }, h("summary", {}, label),
+        h("ul", {}, item.calls.map((c) => h("li", { class: c.status === "failed" ? "failed" : "" }, c.title))));
+      return el;
+    }
+    case "ask": return askView(item);
+  }
+  return h("div");
+}
+
+function askView(ask) {
+  if (ask.resolved) {
+    const picked = ask.options.find((o) => o.optionId === ask.answer);
+    return h("div", { class: "ask done" }, `${ask.title}: ${ask.answer ? (picked ? picked.name : ask.answer) : "Rejected"}`);
+  }
+  const risky = ask.command && RISKY.test(ask.command);
+  const buttons = ask.options.map((o) => {
+    const allow = (o.kind || "").startsWith("allow");
+    const b = h("button", { class: "btn" + (allow && !risky ? " primary" : "") }, o.name);
+    b.addEventListener("click", async () => {
+      // Something that deletes or rewrites history takes a second tap, as in the app.
+      if (allow && risky && b.dataset.armed !== "1") {
+        b.dataset.armed = "1";
+        b.classList.add("armed");
+        b.textContent = "Sure? " + o.name;
+        return;
+      }
+      await answer(ask, o.optionId, b);
+    });
+    return b;
+  });
+  const reject = h("button", { class: "btn" }, "Reject");
+  reject.addEventListener("click", () => answer(ask, null, reject));
+  if (!ask.options.some((o) => (o.kind || "").startsWith("reject"))) buttons.push(reject);
+  return h("div", { class: "ask" },
+    h("div", { class: "what" }, ask.title),
+    ask.command ? h("pre", {}, ask.command) : null,
+    h("div", { class: "options" }, buttons));
+}
+
+async function answer(ask, optionId, button) {
+  button.disabled = true;
+  try {
+    await callThread(open.id, "POST", `/api/threads/${encodeURIComponent(open.id)}/permissions/${encodeURIComponent(ask.id)}`, { option_id: optionId });
+  } catch (e) {
+    button.disabled = false;
+    toast(e.message);
+  }
+}
+
+// A little Markdown: code blocks, inline code and bold. Everything stays text.
+function prose(text) {
+  const out = [];
+  const parts = text.split(/```[^\n]*\n?/);
+  parts.forEach((part, i) => {
+    if (i % 2 === 1) {
+      out.push(h("pre", {}, part.replace(/\n$/, "")));
+      return;
+    }
+    for (const para of part.split(/\n{2,}/)) {
+      if (!para.trim()) continue;
+      const p = h("p");
+      for (const bit of para.split(/(`[^`\n]+`|\*\*[^*\n]+\*\*)/)) {
+        if (!bit) continue;
+        if (bit.startsWith("`") && bit.endsWith("`") && bit.length > 2) p.append(h("code", {}, bit.slice(1, -1)));
+        else if (bit.startsWith("**") && bit.endsWith("**") && bit.length > 4) p.append(h("strong", {}, bit.slice(2, -2)));
+        else p.append(bit);
+      }
+      out.push(p);
+    }
+  });
+  return out;
+}
+
+// ---- Writing ----
+
+const drafts = new Map();
+// On the list, the box at the bottom keeps an idea: Hub puts it in the focus of the project it
+// is about. The phone keyboard's own dictation works in it.
+function renderIdeaBox() {
+  if ($("bottom").querySelector("textarea[data-idea]")) return;
+  const input = h("textarea", { rows: "1", placeholder: "An idea…", "data-idea": "1", enterkeyhint: "done" });
+  input.value = store.get("hub.phone.idea") || "";
+  const grow = () => {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, window.innerHeight * 0.4) + "px";
+  };
+  input.addEventListener("input", () => {
+    store.set("hub.phone.idea", input.value);
+    grow();
+  });
+  const keep = h("button", { class: "btn primary" }, "Keep");
+  keep.addEventListener("click", async () => {
+    const text = input.value.trim();
+    if (!text) return;
+    keep.disabled = true;
+    try {
+      await call("POST", "/api/ideas", { text });
+      input.value = "";
+      store.set("hub.phone.idea", "");
+      grow();
+      toast("Kept. Hub puts it in the right project's focus.");
+    } catch (e) {
+      toast(e.message);
+    } finally {
+      keep.disabled = false;
+    }
+  });
+  $("bottom").replaceChildren(h("div", { class: "composer" }, input, keep));
+  requestAnimationFrame(grow);
+}
+
+function renderComposer(t, fresh) {
+  const existing = $("bottom").querySelector("textarea");
+  if (existing && !fresh && existing.dataset.thread === open.id) {
+    // Keep what is being typed and the keyboard; only the buttons change.
+    const stop = $("bottom").querySelector(".stop");
+    if (stop) stop.hidden = !(t && t.status === "running");
+    return;
+  }
+  const input = h("textarea", { rows: "1", placeholder: "Write to the agent…", "data-thread": open.id, enterkeyhint: "send" });
+  input.value = drafts.get(open.id) || "";
+  const grow = () => {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, window.innerHeight * 0.4) + "px";
+  };
+  input.addEventListener("input", () => {
+    drafts.set(open.id, input.value);
+    grow();
+  });
+  const send = h("button", { class: "btn primary" }, "Send");
+  const stop = h("button", { class: "btn stop", hidden: !(t && t.status === "running") }, "Stop");
+  send.addEventListener("click", async () => {
+    const text = input.value.trim();
+    if (!text) return;
+    const id = open.id;
+    send.disabled = true;
+    const clientId = (crypto.randomUUID ? crypto.randomUUID() : Date.now() + "-" + Math.random().toString(36).slice(2));
+    try {
+      await callThread(id, "POST", `/api/threads/${encodeURIComponent(id)}/messages`, { text, client_id: clientId });
+      drafts.delete(id);
+      if (open && open.id === id) {
+        input.value = "";
+        grow();
+      }
+    } catch (e) {
+      toast(e.message);
+    } finally {
+      send.disabled = false;
+    }
+  });
+  stop.addEventListener("click", async () => {
+    try {
+      await callThread(open.id, "POST", `/api/threads/${encodeURIComponent(open.id)}/cancel`);
+    } catch (e) {
+      toast(e.message);
+    }
+  });
+  $("bottom").replaceChildren(h("div", { class: "composer" }, input, stop, send));
+  requestAnimationFrame(grow);
+}
+
+// ---- Start ----
+
+(async () => {
+  await pairFromLink();
+  if (!token) {
+    if (!$("main").childElementCount) noteScreen();
+    return;
+  }
+  render(true);
+  connect();
+  for (const m of others.values()) connectMachine(m);
+  await refresh();
+  route();
+  discover();
+})();
+</script>
+</body>
+</html>

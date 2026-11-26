@@ -1,0 +1,7 @@
+[Unit]
+Description=Hub weekly routine, Mondays 03:17
+[Timer]
+OnCalendar=Mon *-*-* 03:17:00
+Persistent=true
+[Install]
+WantedBy=timers.target

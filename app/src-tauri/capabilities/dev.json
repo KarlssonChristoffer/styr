@@ -1,0 +1,22 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "dev",
+  "description": "Dev mode's window loads the live UI from the dev clone and may do what the main window does.",
+  "windows": ["dev"],
+  "remote": { "urls": ["http://127.0.0.1:1421", "http://127.0.0.1:1421/*", "http://localhost:1421/*"] },
+  "permissions": [
+    "core:default",
+    "core:webview:allow-set-webview-zoom",
+    "core:window:allow-set-title",
+    "core:window:allow-request-user-attention",
+    "core:window:allow-set-focus",
+    "core:window:allow-start-dragging",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-close",
+    "dialog:allow-open",
+    "dialog:allow-message",
+    "notification:default",
+    "allow-core-token"
+  ]
+}

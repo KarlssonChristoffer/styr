@@ -1,0 +1,1 @@
+warn_on_err_swallows_both_outcomes  # tests that an error is swallowed; no assert on purpose

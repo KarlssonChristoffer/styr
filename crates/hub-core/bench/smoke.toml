@@ -1,0 +1,131 @@
+# The smoke suite: five small tasks a thread should finish on the engine's cheapest model.
+# Read by `crates/hub-core/src/bench/suite.rs` (baked into hubd); the format and every check word
+# are in docs/architecture/bench.md. Any change to this file (a prompt, a fixture, a check, even
+# this comment) is a new suite version and starts a new result series.
+
+suite = "smoke"
+engine = "claude"
+model = "fast"
+repeats = 3
+timeout_s = 600
+cost_cap_usd = 5.0
+
+[[case]]
+id = "read-answer"
+prompts = ["Read notes/inventory.md and tell me which drawer the spare key is in. Put only the number on the last line of your answer."]
+
+[case.files]
+"README.md" = "# Storeroom\nNotes about the storeroom.\n"
+"notes/inventory.md" = """
+| item | drawer |
+|---|---|
+| tape | 2 |
+| spare key | 7 |
+| batteries | 4 |
+"""
+
+[[case.check]]
+ended = "end_turn"
+[[case.check]]
+no_error = true
+[[case.check]]
+reply = '(?m)^\s*7\s*$'
+[[case.check]]
+unchanged = ["notes/inventory.md", "README.md"]
+[[case.check]]
+proof = "none"
+[[case.check]]
+settled = true
+
+[[case]]
+id = "edit-check"
+prompts = ["npm test fails. Fix the bug in sum.js, do not change sum.test.js, and run npm test to show it passes."]
+
+[case.files]
+"package.json" = '{ "name": "bench-sum", "private": true, "scripts": { "test": "node --test" } }'
+"sum.js" = "exports.sum = (a, b) => a - b;\n"
+"sum.test.js" = """
+const test = require('node:test');
+const assert = require('node:assert');
+const { sum } = require('./sum');
+
+test('sum adds two numbers', () => {
+  assert.strictEqual(sum(2, 3), 5);
+});
+"""
+
+[[case.check]]
+ended = "end_turn"
+[[case.check]]
+no_error = true
+[[case.check]]
+file = "sum.js"
+matches = 'a\s*\+\s*b'
+[[case.check]]
+unchanged = ["sum.test.js"]
+[[case.check]]
+proof = "shown"
+[[case.check]]
+refused_max = 0
+
+[[case]]
+id = "csv-svg"
+prompts = ["With a small script, write output/orders.csv (header id,customer,amount and ten orders) and output/chart.svg, a bar chart of the amounts. Run the script, then name both files in your answer."]
+
+[case.files]
+"README.md" = "# Orders\n"
+
+[[case.check]]
+ended = "end_turn"
+[[case.check]]
+file = "output/orders.csv"
+lines = 11
+matches = '^id,customer,amount'
+[[case.check]]
+file = "output/chart.svg"
+matches = '<svg'
+[[case.check]]
+names = ["orders.csv", "chart.svg"]
+[[case.check]]
+no_error = true
+
+[[case]]
+id = "html-page"
+prompts = ["Build a simple hello world page in index.html with a button that counts clicks. Look at it with Hub's page_check and fix anything it finds."]
+
+[case.files]
+"README.md" = "# Hello\n"
+
+[[case.check]]
+ended = "end_turn"
+[[case.check]]
+file = "index.html"
+matches = '(?i)<button'
+[[case.check]]
+hub_tool = "page_check"
+min = 1
+[[case.check]]
+proof = "shown"
+[[case.check]]
+no_error = true
+
+[[case]]
+id = "steps-plan"
+prompts = ["Make a plan of 4 steps with update_steps: read README.md, read docs/guide.md, write summary.md with one line per file, and say which files you read. Do the steps and mark each one done with update_steps as you go."]
+
+[case.files]
+"README.md" = "# Tool\nA tool that sorts photos by date.\n"
+"docs/guide.md" = "# Guide\nRun `sort-photos <folder>`; it moves files into YYYY/MM folders.\n"
+
+[[case.check]]
+ended = "end_turn"
+[[case.check]]
+hub_tool = "update_steps"
+min = 2
+[[case.check]]
+steps = 4
+[[case.check]]
+file = "summary.md"
+lines = 2
+[[case.check]]
+names = ["README.md", "guide.md"]

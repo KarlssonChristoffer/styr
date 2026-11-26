@@ -1,0 +1,5 @@
+idle
+running
+waiting_on_you
+error
+in_terminal

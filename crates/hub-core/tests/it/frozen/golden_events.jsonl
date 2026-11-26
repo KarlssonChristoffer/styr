@@ -1,0 +1,175 @@
+{"kind":"user_message","data":{"text":"hi"}}
+{"kind":"user_message","data":{"text":"fix it","original":"fix it pls","review":"r1"}}
+{"kind":"user_message","data":{"text":"carry on","restart":42}}
+{"kind":"turn_start","data":{}}
+{"kind":"turn_start","data":{"prompt":3}}
+{"kind":"turn_start","data":{"unprompted":true}}
+{"kind":"turn_end","data":{"stop_reason":"end_turn"}}
+{"kind":"turn_end","data":{"stop_reason":"end_turn","prompt":3}}
+{"kind":"turn_end","data":{"stop_reason":"cancelled","forced":true,"prompt":3}}
+{"kind":"turn_end","data":{"stop_reason":"end_turn","unprompted":true,"handed_over":true}}
+{"kind":"error","data":{"message":"boom"}}
+{"kind":"error","data":{"message":"turn failed","prompt":5,"detail":"the provider said no"}}
+{"kind":"error","data":{"message":"engine gone","prompt":5,"leaves":"error"}}
+{"kind":"permission_request","data":{"tool_call":{},"options":[],"id":"7"}}
+{"kind":"permission_request","data":{"tool_call":{"toolCallId":"c1","title":"Run ls"},"options":[{"optionId":"allow_once","name":"Allow","kind":"allow_once"}],"id":"0192"}}
+{"kind":"user_message","data":{"text":"fix it","attachments":[],"handoff":12,"original":"fix it pls"}}
+{"kind":"user_message","data":{"text":"see this","attachments":[{"name":"a.png","mime":"image/png","data":"aGk="},{"name":"n.txt","mime":"text/plain","text":"hi"}]}}
+{"kind":"user_message","data":{"text":"Problems to look at","attachments":[],"vakten":{"problems":2}}}
+{"kind":"permission_resolved","data":{"id":"0192","option_id":"allow_once"}}
+{"kind":"permission_resolved","data":{"id":"0192","option_id":null}}
+{"kind":"permission_resolved","data":{"id":"0192"}}
+{"kind":"permission_resolved","data":{"id":"0192","option_id":null,"stale":true}}
+{"kind":"permission_resolved","data":{"id":"0192","option_id":"allow_once","woke":true}}
+{"kind":"permission_resolved","data":{"id":"0192","option_id":null,"restart":true}}
+{"kind":"permission_resolved","data":{"id":"0192","option_id":null,"moved":true}}
+{"kind":"permission_auto","data":{"tool_call":{"toolCallId":"c1","title":"Read a file","kind":"read","status":"pending","rawInput":{"path":"a.rs"},"content":[]},"option_id":"allow_once","allowed":true,"why":"docs_for only reads Hub"}}
+{"kind":"permission_auto","data":{"tool_call":{"toolCallId":"c2","title":"Delete"},"option_id":null,"allowed":false,"why":"a routine may read"}}
+{"kind":"slept","data":{"ids":["0192","0193"]}}
+{"kind":"status","data":{"status":"idle","why":"core_started"}}
+{"kind":"status","data":{"status":"running","why":"cloud_prompt"}}
+{"kind":"status","data":{"status":"a_word_from_later","why":"x"}}
+{"kind":"queue","data":{"seq":7,"action":"dropped"}}
+{"kind":"queue","data":{"seq":7,"action":"steered"}}
+{"kind":"queue","data":{"seq":7,"action":"removed"}}
+{"kind":"queue","data":{"seq":7,"action":"edited","text":"two!"}}
+{"kind":"paused","data":{"by":"tincan"}}
+{"kind":"restart","data":{"by":"crash","prompt":5,"queued":[],"state":"continued"}}
+{"kind":"restart","data":{"by":"update","prompt":5,"queued":[7,9],"state":"continued"}}
+{"kind":"restart","data":{"by":"restart","prompt":5,"queued":[],"state":"stopped","why":"loop"}}
+{"kind":"restart","data":{"by":"move","prompt":5,"queued":[7],"state":"continued"}}
+{"kind":"permission_resolved","data":{"id":"0192","option_id":null,"woke":true}}
+{"kind":"session_started","data":{"driver":"acp","command":"claude-code-acp","protocol_version":1,"agent":{"name":"@zed-industries/claude-code-acp","title":"Claude Code","version":"0.10.2"},"session_id":"0199c7a2-1","resumed":false}}
+{"kind":"session_started","data":{"driver":"acp","command":"codex-acp","protocol_version":1,"agent":{"name":"codex-acp","version":"0.4.0"},"session_id":"s2","resumed":true,"start_ms":{"initialize":412,"session":903,"total":1315}}}
+{"kind":"session_started","data":{"driver":"acp","command":"mock-agent","protocol_version":1,"agent":null,"session_id":"s3","resumed":false,"start_ms":{"initialize":3,"session":2,"total":5}}}
+{"kind":"session_state","data":{"config_options":[{"id":"model","name":"Model","description":"Which model","category":"model","type":"select","currentValue":"opus","options":[{"value":"opus","name":"Opus","description":"Most capable"},{"group":"more","name":"More","options":[{"value":"haiku","name":"Haiku"}]}]},{"id":"fast","name":"Fast","description":"On or off","type":"boolean","currentValue":true}],"modes":{"currentModeId":"default","availableModes":[{"id":"default","name":"Default","description":"Asks first"}]},"prompt_capabilities":{"image":true,"audio":false,"embeddedContext":true}}}
+{"kind":"session_state","data":{"config_options":[{"id":"model","name":"Model","description":"Which model","category":"model","type":"select","currentValue":"sonnet","options":[]}],"modes":{"currentModeId":"plan","availableModes":[]}}}
+{"kind":"session_state","data":{"config_options":null,"modes":null,"prompt_capabilities":{"image":false,"audio":false,"embeddedContext":false}}}
+{"kind":"session_state","data":{"config_options":null,"modes":null}}
+{"kind":"setting","data":{"config_id":"model","value":"opus"}}
+{"kind":"setting","data":{"config_id":"fast","value":true}}
+{"kind":"setting","data":{"config_id":"mode","value":"acceptEdits","by":"default"}}
+{"kind":"setting","data":{"config_id":"model","value":"sonnet","by":"prefer"}}
+{"kind":"setting","data":{"config_id":"model","value":"claude-opus-4","by":"name"}}
+{"kind":"setting","data":{"config_id":"model","value":"haiku","by":"auto"}}
+{"kind":"quota_switch","data":{"limit":"5-hour","percent":91.5,"from":"opus","to":"sonnet"}}
+{"kind":"quota_switch","data":{"limit":"Weekly","percent":96.0,"from":null,"to":"sonnet"}}
+{"kind":"quota_wait","data":{"state":"waiting","seq":41,"at":1761850800000,"known":true,"limit":"5-hour","resets":"resets 3pm","message":"You've hit your limit","tries":0}}
+{"kind":"quota_wait","data":{"state":"waiting","seq":null,"at":1761850800000,"known":false,"limit":null,"resets":null,"message":"Usage limit reached","tries":2,"offer":"codex"}}
+{"kind":"quota_wait","data":{"state":"resumed","wait":44,"by":"hub"}}
+{"kind":"quota_wait","data":{"state":"cancelled","wait":44,"by":"message"}}
+{"kind":"quota_wait","data":{"state":"switched","wait":44,"to":"codex","from":"claude","by":"you"}}
+{"kind":"quota_wait","data":{"state":"gave_up","seq":41,"message":"You've hit your limit","tries":3}}
+{"kind":"engine_switch","data":{"from":"claude","to":"codex"}}
+{"kind":"sign_in_lost","data":{"engine":"claude","label":"Claude","machine":"pc","message":"Invalid API key","kept":true}}
+{"kind":"sign_in_lost","data":{"engine":"claude","label":"Claude","machine":"pc","message":"Please run /login","kept":false,"can_keep":true}}
+{"kind":"sign_in_lost","data":{"engine":"claude","label":"Claude","machine":"mac","message":"Please run /login","kept":false,"can_keep":true,"keychain":true}}
+{"kind":"sign_in_lost","data":{"engine":"codex","label":"Codex","machine":"pc","message":"401 Unauthorized","kept":false,"can_keep":false,"keychain":false}}
+{"kind":"unattended","data":{"by":"Vakten","prefer":{"mode":["bypass","accept"],"model":["sonnet"]}}}
+{"kind":"unattended","data":{"by":"Merge queue","prefer":{"mode":["accept"]}}}
+{"kind":"unattended","data":{"by":"Problems","prefer":{}}}
+{"kind":"checkpoint","data":{"seq":12,"commit":"3f1c2a9d0e","root":"C:\\Users\\x\\repo","head":"9a8b7c6d5e","branch":"main"}}
+{"kind":"checkpoint","data":{"seq":1,"commit":"3f1c2a9d0e","root":"/home/x/repo","head":null,"branch":"main"}}
+{"kind":"checkpoint","data":{"seq":3,"commit":"3f1c2a9d0e","root":"/home/x/repo","head":"9a8b7c6d5e","branch":null}}
+{"kind":"restored","data":{"to":"3f1c2a9d0e","seq":12,"root":"/home/x/repo","files":3,"commits":1,"kept_commits":null,"safety":"77aa66bb55","safety_head":"9a8b7c6d5e","safety_branch":"main"}}
+{"kind":"restored","data":{"to":"77aa66bb55","seq":null,"root":"/home/x/repo","files":3,"commits":0,"kept_commits":"they were pushed","safety":"11cc22dd33","safety_head":null,"safety_branch":null}}
+{"kind":"rewind","data":{"from":12,"files":true,"by":"you"}}
+{"kind":"rewind","data":{"from":4,"files":false,"by":"you"}}
+{"kind":"rule_saved","data":{"text":"Never run cargo fmt --all","path":"/home/x/repo/CLAUDE.md","seq":12}}
+{"kind":"attempt","data":{"group":"g-1730000000000","n":1,"of":3,"threads":["t1","t2","t3"],"base":"3f1c2a9d0e","root":"/home/x/repo","cwd":"/home/x/repo/app","worktree":"/home/x/repo/.git/hub-attempts/1","branch":"hub/attempt-g-1"}}
+{"kind":"attempt","data":{"group":"g-1730000000000","state":"picked","files":4,"cwd":"/home/x/repo/app","root":"/home/x/repo","safety":"77aa66bb55","safety_head":"9a8b7c6d5e","safety_branch":"main"}}
+{"kind":"attempt","data":{"group":"g-1730000000000","state":"picked","files":0,"cwd":"/home/x/repo","root":"/home/x/repo","safety":"77aa66bb55","safety_head":null,"safety_branch":null}}
+{"kind":"attempt","data":{"group":"g-1730000000000","state":"dropped","by":"t1"}}
+{"kind":"terminal","data":{"state":"taken","pid":4120,"command":"claude --resume 0199c7a2-1"}}
+{"kind":"terminal","data":{"state":"taken","pid":null,"command":"claude --resume 0199c7a2-1","cut":41}}
+{"kind":"terminal","data":{"state":"back"}}
+{"kind":"terminal","data":{"state":"imported","turns":2,"replay_turns":9}}
+{"kind":"terminal","data":{"state":"imported","turns":0,"replay_turns":7,"carry_on":true}}
+{"kind":"moved","data":{"from":"pc","folder":"/home/x/repo","via":"files","files":[],"dirty":0,"stopped":false}}
+{"kind":"moved","data":{"from":"mac","folder":"C:\\Users\\x\\repo","via":"bundle","files":[".env",".env.local"],"dirty":2,"stopped":true}}
+{"kind":"moved_away","data":{"to":"tincan","folder":"/home/x/repo"}}
+{"kind":"clash","data":{"path":"/home/x/repo/src/lib.rs","other":"0192aa","other_title":"Fix the parser"}}
+{"kind":"leak","data":{"seq":44,"findings":[{"path":"src/config.rs","line":12,"kind":"api key","hint":"sk-…9f2"},{"path":".env","line":1,"kind":"vault secret","hint":"GITHUB_TOKEN"}],"sent":true}}
+{"kind":"customs","data":{"seq":44,"found":[{"kind":"npm","name":"left-pad","path":"app/package.json","status":"held"},{"kind":"crate","name":"serde","path":"Cargo.toml","status":"cleared"}],"sent":true}}
+{"kind":"customs","data":{"seq":51,"found":[{"kind":"pypi","name":"requests","path":"requirements.txt","status":"refused"}],"sent":false}}
+{"kind":"customs","data":{"declared":true,"found":[{"kind":"cli","name":"ripgrep","path":"","status":"held","why":"to search the repo"}]}}
+{"kind":"proof","data":{"reply":44,"files":3,"kind":"tests","command":"cargo test -p hub-core","hidden":false,"state":"shown","why":"shown"}}
+{"kind":"proof","data":{"reply":44,"files":3,"kind":null,"command":null,"hidden":false,"state":"asked","why":"missing"}}
+{"kind":"proof","data":{"reply":44,"files":3,"kind":"tests","command":"npm test | tail","hidden":true,"state":"asked","why":"failed"}}
+{"kind":"proof","data":{"reply":44,"files":3,"kind":null,"command":null,"hidden":false,"state":"missing"}}
+{"kind":"proof","data":{"reply":44,"files":null,"kind":"screenshot","command":"screenshot","hidden":false,"state":"shown"}}
+{"kind":"proof","data":{"reply":44,"files":1,"kind":null,"command":null,"hidden":false,"state":"skipped","why":"removed"}}
+{"kind":"proof","data":{"reply":44,"files":2,"kind":"tests","command":"cargo test","state":"shown"}}
+{"kind":"proof","data":{"reply":44,"files":2,"kind":null,"command":null,"state":"failed"}}
+{"kind":"docs","data":{"reply":44,"state":"updated","sections":[{"doc":"docs/architecture/network.md","heading":"Thread status from events","first":230,"last":255,"files":["crates/hub-core/src/status.rs"]}]}}
+{"kind":"docs","data":{"reply":44,"state":"asked","sections":[{"doc":"docs/MAP.md","heading":null,"first":1,"last":120,"files":["crates/hub-core/src/hub.rs","crates/hub-core/src/store.rs"]}]}}
+{"kind":"docs","data":{"reply":44,"state":"checked","sections":[]}}
+{"kind":"docs","data":{"reply":44,"state":"ignored","why":"asked_before","sections":[{"doc":"docs/MAP.md","heading":null,"first":1,"last":120,"files":["crates/hub-core/src/hub.rs"]}]}}
+{"kind":"docs","data":{"reply":44,"state":"skipped","why":"reverted","sections":[{"doc":"docs/MAP.md","heading":"Layout","first":3,"last":40,"files":["app/src/lib/poll.ts"]}]}}
+{"kind":"review","data":{"id":"0199-r1","state":"running","model":"opus","files":["src/a.rs","src/b.rs"],"base":"1f2e3d","head":"4a5b6c","seq":57,"by":"you","reason":null,"chunks":[]}}
+{"kind":"review","data":{"id":"0199-r1","state":"running","model":"opus","files":["src/a.rs","src/b.rs"],"base":"1f2e3d","head":"4a5b6c","seq":57,"by":"you","reason":null,"chunks":[{"title":"All changes","files":["src/a.rs","src/b.rs"],"review":true,"why":"","state":"waiting"}]}}
+{"kind":"review","data":{"id":"0199-r1","state":"running","model":"opus","files":["src/a.rs","src/b.rs"],"base":"1f2e3d","head":"4a5b6c","seq":57,"by":"agent","reason":"before the merge","chunks":[{"title":"All changes","files":["src/a.rs","src/b.rs"],"review":true,"why":"","state":"running"}]}}
+{"kind":"review","data":{"id":"0199-r1","state":"done","model":"opus","files":["src/a.rs","src/b.rs"],"base":"1f2e3d","head":"4a5b6c","seq":57,"by":"you","reason":null,"chunks":[{"title":"Core","files":["src/a.rs"],"review":true,"why":"logic","state":"done","verdict":"Minor issues","text":"Minor issues\n- **Low** `src/a.rs:4` off by one"},{"title":"Docs","files":["src/b.rs"],"review":false,"why":"plain docs","state":"skipped"}],"sent":true,"text":"Minor issues\n\n### Core · Minor issues\n\n- **Low** `src/a.rs:4` off by one\n\nNot reviewed: Docs (plain docs)\n"}}
+{"kind":"review","data":{"id":"0199-r1","state":"failed","model":"opus","files":["src/a.rs","src/b.rs"],"base":"1f2e3d","head":"4a5b6c","seq":57,"by":"you","reason":null,"chunks":[{"title":"Core","files":["src/a.rs"],"review":true,"why":"logic","state":"failed","error":"took more than 15 minutes"},{"title":"Docs","files":["src/b.rs"],"review":false,"why":"plain docs","state":"skipped"}],"error":"took more than 15 minutes"}}
+{"kind":"design","data":{"on":true,"by":"you"}}
+{"kind":"design","data":{"on":true,"by":"start"}}
+{"kind":"design","data":{"on":false,"by":"you"}}
+{"kind":"design","data":{"strayed":["src/app.rs"],"seq":61}}
+{"kind":"design","data":{"review":"0199-d1","state":"running","doc":"docs/design/queue.md","checks":[{"name":"gaps","title":"Gaps","model":null,"state":"running"},{"name":"ready","title":"Ready to build?","model":"opus","state":"running"}],"by":"you"}}
+{"kind":"design","data":{"review":"0199-d1","state":"done","doc":"docs/design/queue.md","checks":[{"name":"gaps","title":"Gaps","model":null,"state":"done","verdict":"Nothing missing","text":"Nothing missing."},{"name":"ready","title":"Ready to build?","model":"opus","state":"failed","error":"took more than 15 minutes"}],"by":"you","ready":false,"verdict":"Ready to build","sent":false}}
+{"kind":"design","data":{"review":"0199-d1","state":"failed","doc":"docs/design/queue.md","checks":[{"name":"gaps","title":"Gaps","model":null,"state":"failed","error":"took more than 15 minutes"}],"by":"agent","error":"took more than 15 minutes"}}
+{"kind":"task","data":{"id":"vetting-1793000000000","task":"vetting","name":"left-pad","kind":"package","engine":"claude","model":"haiku","state":"working","by":"hub"}}
+{"kind":"task","data":{"id":"vetting-1793000000000","task":"vetting","name":"left-pad","kind":"package","engine":"claude","model":"haiku","by":"hub","ms":8421,"state":"done","verdict":"cleared","reason":"well known, no install scripts"}}
+{"kind":"task","data":{"id":"vetting-1793000000000","task":"vetting","name":"left-pad","kind":"package","engine":"","model":null,"by":"hub","ms":8421,"state":"done","verdict":"held","reason":""}}
+{"kind":"task","data":{"id":"vetting-1793000000000","task":"vetting","name":"left-pad","kind":"package","engine":"claude","model":"haiku","by":"hub","ms":8421,"state":"failed","reason":"the engine did not answer"}}
+{"kind":"focus","data":{"fits":false,"stage":"Stage 2: the queue","line":14,"why":"not one of the stage's goals or ideas (jev is 91% sure)"}}
+{"kind":"reading","data":{"feature":"turn","seq":88,"state":"asks","confidence":0.92,"connection":"jev","ms":412,"acted":true}}
+{"kind":"reading","data":{"feature":"turn","seq":90,"state":"partway","confidence":0.41,"connection":"jev","ms":388,"acted":false}}
+{"kind":"reading","data":{"feature":"topic","seq":93,"state":"new","confidence":0.97,"connection":"jev","ms":230,"acted":true}}
+{"kind":"reading","data":{"feature":"focus","stage":"Stage 2: the queue","line":16,"text":"Chat queue","confidence":0.88,"connection":"jev","ms":301,"acted":true}}
+{"kind":"reading","data":{"feature":"focus","stage":"Stage 2: the queue","line":null,"text":"A calmer start page","confidence":0.9,"connection":"jev","ms":301,"acted":true}}
+{"kind":"task","data":{"id":"vetting-1793000000001","task":"vetting","name":"serde","kind":"crates","engine":"claude","model":null,"state":"working","by":"hub"}}
+{"kind":"page","data":{"id":"p-0199a","title":"Demo","height":1200,"bytes":5321}}
+{"kind":"page","data":{"id":"p-0199b","title":"Demo","height":null,"bytes":5400,"replaces":"p-0199a"}}
+{"kind":"replies","data":{"question":"Run it?","options":[{"label":"Yes","message":"Yes"},{"label":"No","message":"No, hand it off"}]}}
+{"kind":"ask","data":{"question":"Which name?","options":[{"label":"Yes","message":"Yes"},{"label":"No","message":"No, hand it off"}],"id":"5f0c1d2e3a4b4c5d8e9f0a1b2c3d4e5f","assumed":"alpha"}}
+{"kind":"plugin_suggested","data":{"repo":{"full_name":"acme/tool","owner":"acme","name":"tool","description":"A tool for agents","url":"https://github.com/acme/tool","stars":1200,"week":null,"week_estimated":false,"spark":[1,4,9],"spark_span":1209600000,"kind":"mcp","language":"Rust","topics":["mcp","agents"],"license":"MIT","created_at":1780000000000,"pushed_at":1793000000000,"archived":false,"avatar":null,"customs":null,"customs_reason":""},"why":"it reads the logs for you"}}
+{"kind":"reaction","data":{"seq":12,"emoji":"👍","by":"agent","on":true}}
+{"kind":"reaction","data":{"seq":12,"emoji":":shipit:","by":"you","on":false}}
+{"kind":"gist","data":{"upto":88,"points":["Fixed the queue.","Tests pass."],"ask":null}}
+{"kind":"gist","data":{"upto":90,"points":["Fixed the queue."],"ask":"Merge it?","by":"agent"}}
+{"kind":"output","data":{"tool_call_id":"bash-1","data":"Compiling hub-core v0.1.0\n"}}
+{"kind":"desk_note","data":{"thread":"0199-t2","title":"Fix the queue","state":"done","text":"Done, tests pass.","permission":false}}
+{"kind":"desk_note","data":{"thread":"0199-t2","title":"Fix the queue","state":"asks","text":"Run cargo test?","permission":true}}
+{"kind":"reported","data":{"about":41,"problem":7,"state":"sent"}}
+{"kind":"reported","data":{"about":41,"problem":7,"state":"fixing","fix":"0199-f1","fix_title":"Fix #7: engine failed"}}
+{"kind":"reported","data":{"about":41,"problem":7,"state":"stopped","fix":"0199-f1","fix_title":"Fix #7: engine failed","text":"The fix thread was stopped before it finished.","pr":null}}
+{"kind":"reported","data":{"about":41,"problem":7,"state":"fixed","fix":"0199-f1","fix_title":"Fix #7: engine failed","text":"Opened https://github.com/a/hub/pull/13","pr":{"number":13,"url":"https://github.com/a/hub/pull/13","state":"open"}}}
+{"kind":"child","data":{"id":"0199-c1","title":"Draw the logo","kind":"image","context":"brief","engine":"codex","model":"gpt-image","state":"working","by":"agent"}}
+{"kind":"child","data":{"id":"0199-c1","title":"Draw the logo","kind":"image","context":"brief","engine":"codex","model":null,"state":"working","by":"agent"}}
+{"kind":"child","data":{"id":"0199-c1","title":"Draw the logo","kind":"image","context":"brief","engine":"codex","model":"gpt-image","state":"done","by":"agent","reply":"Drew it.","images":["logo.png"]}}
+{"kind":"child","data":{"id":"0199-c1","title":"Draw the logo","kind":"image","context":"brief","engine":"codex","model":"gpt-image","state":"failed","by":"agent","error":"it was stopped"}}
+{"kind":"child","data":{"id":"0199-c1","title":"Draw the logo","kind":"image","context":"brief","engine":"codex","state":"working","by":"agent"}}
+{"kind":"child","data":{"id":"0199-c1","title":"Draw the logo","kind":"image","context":"brief","engine":"codex","state":"done","by":"agent","reply":"Looks good.","images":[]}}
+{"kind":"child","data":{"id":"0199-c1","title":"Draw the logo","kind":"image","context":"brief","engine":"codex","state":"done","by":"agent","reply":"","images":["logo.png"],"quiet":true}}
+{"kind":"auto","data":{"on":true,"by":"start"}}
+{"kind":"auto","data":{"ask":"image","engine":"codex","why":"asks for a picture"}}
+{"kind":"auto","data":{"ask":"quick","engine":"claude","why":"a short question","from":"opus","to":"haiku","from_name":"Opus","to_name":"Haiku"}}
+{"kind":"handoff_offer","data":{"tool":"Knegarn","folder":"/home/c/knegarn","label":"Hand to Knegarn","about":"Builds unattended","can_build":true,"why":"a long refactor"}}
+{"kind":"handoff_offer","data":{"tool":"Knegarn","folder":"/home/c/knegarn","label":"Hand to Knegarn","about":null,"can_build":false,"why":""}}
+{"kind":"handed_off","data":{"tool":"Knegarn","title":"Fix the queue","ok":true,"output":"queued as run-41","folder":"/home/c/knegarn","work":"hub-41"}}
+{"kind":"handed_off","data":{"tool":"Knegarn","title":"","ok":false,"output":"Knegarn takes no handoffs","folder":"/home/c/knegarn"}}
+{"kind":"handed_off","data":{"tool":"Knegarn","title":"Fix the queue","ok":true,"output":"queued"}}
+{"kind":"handoff_result","data":{"tool":"Knegarn","title":"Fix the queue","state":"done","proven":true,"model":"opus","cost":1.5,"said":"merged","link":"https://github.com/a/hub/pull/13"}}
+{"kind":"handoff_result","data":{"tool":"Knegarn","title":"Fix the queue","state":"stopped","proven":null,"model":null,"cost":null,"said":null,"link":null}}
+{"kind":"worker_run","data":{"tool":"Knegarn","folder":"/home/c/knegarn","run":"run-41","title":"Fix the queue","state":"running","paused":false,"said":null,"steps":[{"id":"build","label":"Build","state":"done","visits":1},{"id":"review","label":"Review","state":"now","visits":2}],"round":2,"agents":[{"role":"reviewer","calls":2,"model":"opus","last":"Needs changes"}],"link":null,"cost":0.42,"controls":[{"id":"stop","label":"Stop","about":null,"ask":[],"danger":true,"authorizes":false}],"cursor":17,"lines":[{"seq":17,"kind":"review","step":"review","round":2,"agent":"reviewer","text":"Needs changes"}]}}
+{"kind":"worker_run","data":{"tool":"Knegarn","folder":"/home/c/knegarn","run":"run-41","title":"Fix the queue","state":"done","paused":false,"said":"delivered","steps":[{"id":"build","label":"Build","state":"done","visits":1},{"id":"review","label":"Review","state":"now","visits":2}],"round":null,"agents":[{"role":"reviewer","calls":2,"model":"opus","last":"Needs changes"}],"link":"https://github.com/a/hub/pull/13","cost":null,"controls":[],"cursor":21,"lines":[]}}
+{"kind":"update","data":{"sessionUpdate":"agent_message_chunk","content":{"type":"text","text":"Looking at the queue. "}}}
+{"kind":"update","data":{"sessionUpdate":"agent_thought_chunk","content":{"type":"text","text":"The lock is taken twice."}}}
+{"kind":"update","data":{"sessionUpdate":"tool_call","toolCallId":"toolu_01","title":"cargo test","kind":"execute","status":"pending","rawInput":{"command":"cargo test"},"_meta":{"claudeCode":{"toolName":"Bash"}}}}
+{"kind":"update","data":{"sessionUpdate":"tool_call_update","toolCallId":"toolu_01","status":"completed","content":[{"type":"content","content":{"type":"text","text":"ok"}}]}}
+{"kind":"update","data":{"sessionUpdate":"plan","entries":[{"content":"Fix the queue","priority":"medium","status":"in_progress"}]}}
+{"kind":"update","data":{"sessionUpdate":"usage_update","used":41000,"size":200000}}
+{"kind":"update","data":{"content":{"type":"text","text":"key order is the engine's own"},"sessionUpdate":"user_message_chunk"}}
+{"kind":"turn_end","data":{"stop_reason":"end_turn","prompt":3,"usage":{"input":4,"output":105,"cache_read":58290,"cache_write":58397}}}
+{"kind":"turn_end","data":{"stop_reason":"end_turn","prompt":5,"usage":{"input":7401,"output":67}}}

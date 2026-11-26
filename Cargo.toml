@@ -1,0 +1,62 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/hub-core",
+    "crates/hub-install",
+    "crates/hub-launcher",
+    "crates/hubd",
+    "crates/mock-agent",
+    "app/src-tauri",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[workspace.dependencies]
+base64 = "0.22"
+hub-core = { path = "crates/hub-core" }
+hub-install = { path = "crates/hub-install" }
+mock-agent = { path = "crates/mock-agent" }
+agent-client-protocol = { version = "3.6.0", features = ["process", "stdio"] }
+anyhow = "1"
+axum = { version = "0.8", features = ["ws"] }
+flate2 = "1"
+brotli-decompressor = "6"
+futures = "0.3"
+ignore = "0.4"
+netstat2 = "0.11"
+portable-pty = "0.9"
+qrcode = { version = "0.14", default-features = false, features = ["svg"] }
+regex = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+rusqlite = { version = "0.41", features = ["bundled", "backup"] }
+rusqlite_migration = "2"
+serde = { version = "1", features = ["derive"] }
+# preserve_order: the event log keeps the key order its writers used (`model/event_data.rs`).
+serde_json = { version = "1", features = ["preserve_order"] }
+sha2 = "0.10"
+sysinfo = "0.37"
+thiserror = "2"
+tokio = { version = "1", features = ["full"] }
+toml = "0.8"
+tokio-tungstenite = { version = "0.27", default-features = false, features = ["connect", "handshake", "rustls-tls-webpki-roots"] }
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+ts-rs = { version = "11", features = ["serde-json-impl", "no-serde-warnings"] }
+uuid = { version = "1", features = ["v4", "v7"] }
+
+# Built on every machine Hub runs on, a Raspberry Pi included, so build time beats size: no LTO
+# and the default 16 codegen units let the compiler use every core on Hub's one big crate.
+# One codegen unit with LTO made the build several times slower for a binary a few MB smaller.
+[profile.release]
+strip = true
+
+# Hub's own code is waiting on agents, disks and the network, not on the CPU, and opt-level 1
+# compiles it in about two thirds of the time. Its dependencies (SQLite, regex, TLS) keep full
+# optimisation and are built once, then cached.
+[profile.release.package.hub-core]
+opt-level = 1

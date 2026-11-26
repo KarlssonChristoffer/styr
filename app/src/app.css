@@ -1,0 +1,644 @@
+/* Tokens taken from the round 1 design (design/home-v1.html). */
+:root {
+  --bg: #1a1918;
+  --bg-sidebar: #151413;
+  /* The rail and the sidebar are drawn this much larger than the rest, so the lists you scan
+     all day stay easy to read without zooming the whole window. */
+  --side-scale: 1.15;
+  --surface: #211f1e;
+  --surface-2: #242220;
+  --surface-hover: #2a2826;
+  --line: #2a2826;
+  --line-strong: #3a3734;
+
+  --text: #ece8e2;
+  --text-2: #d3cfc8;
+  --text-3: #bdb8b0;
+  --muted: #958f88;
+
+  --accent: #a5abee;
+  --accent-bg: rgba(165, 171, 238, 0.15);
+  --green: #84c29a;
+  --green-bg: rgba(132, 194, 154, 0.1);
+  --amber: #ddaa5e;
+  --amber-bg: rgba(221, 170, 94, 0.16);
+  --red: #e5806f;
+  --red-bg: rgba(229, 128, 111, 0.1);
+  /* Project icon colours (looks.svelte.ts): a project's own colour, never a state. Kept off the
+     green, amber and red that status uses. */
+  --p-violet: #a99cf0;
+  --p-blue: #7fa6ee;
+  --p-sky: #78c4e6;
+  --p-teal: #6cc7b8;
+  --p-lime: #b5cf72;
+  --p-orange: #ec9a64;
+  --p-rose: #ee8a9a;
+  --p-pink: #e095d6;
+  --p-sand: #cdb48d;
+  --p-slate: #a3adbb;
+
+  /* Hub's own title bar: the height of the sidebar's top row. */
+  --caption-h: 36px;
+  /* The window buttons keep the size Windows gives its own whatever the zoom, so they are divided
+     by it. Zero where Hub has no own title bar (the browser). */
+  --controls-h: calc(32px / var(--zoom, 1));
+  --controls-w: calc(138px / var(--zoom, 1));
+
+  /* Page layout: views fill the width they get. The gutter grows a little with the window,
+     prose keeps a readable line, and the right panel grows with the screen. In a thread
+     everything (answers, turn footers, dividers, code and the composer) shares one --chat column
+     with one right edge. --chat-text is only for narrower pieces such as the edit box. */
+  --gutter: clamp(20px, 2.4vw, 44px);
+  --prose: 80ch;
+  --chat: calc(920px * var(--text-grow));
+  --chat-text: calc(720px * var(--text-grow));
+  /* Shared by every view, so switching pages does not make things jump. */
+  --page-top: 28px;
+  /* List rows (Routines, Recipes, Workers, Problems): one height, one gap between a row's lines */
+  --row-min: 48px;
+  --row-pad: 8px;
+  --row-gap: 2px;
+  --title: 22px;
+  /* One easing curve for every transition (design/DESIGN.md, Motion). */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Ease-in-out: things that start and stop on screen (slots, bars, panels) and symmetric loops. */
+  --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Durations (design/animation-profile-hub.md). An exit is about 20% shorter than its entrance. */
+  --dur-press: 100ms;
+  --dur-fast: 120ms;
+  --dur-pop: 160ms;
+  --dur-move: 220ms;
+  /* Delay between list rows that arrive together; at most 6 steps. */
+  --stagger: 30ms;
+  --panel-w: calc(clamp(300px, 22vw, 440px) * var(--text-grow));
+
+  /* Text size: every px font size may grow to this, less half its distance to 15px (vite.config.ts).
+     0px keeps the sizes as written; Settings > Appearance raises it. */
+  --text-min: 0px;
+  /* How much body text grew; boxes that hold text grow by as much (see vite.config.ts). */
+  --text-grow: 1;
+
+  /* Corner radii: four steps (design/DESIGN.md). Pills and circles use 999px / 50%. */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --radius: var(--r-md); /* kept: the page frames read it */
+  --radius-sm: var(--r-md);
+  /* The status bar at the foot of the main window (StatusBar.svelte). */
+  --bar-h: 24px;
+  --font: "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Geist Mono Variable", ui-monospace, Menlo, Consolas, monospace;
+  /* Settings > Appearance: the agent's replies follow the interface font until another is picked, and
+     the chat's size, line height and code's size are multiples of the designed ones (prefs.svelte.ts). */
+  --chat-font: var(--font);
+  --chat-scale: 1;
+  --chat-lh: 1.65;
+  --code-scale: 1;
+
+  color-scheme: dark;
+}
+
+:root:not(.own-titlebar) { --controls-h: 0px; --controls-w: 0px; }
+
+/* Cappuccino: the same shapes on warm, light paper. Ink for text and lines, colour only for state. */
+:root[data-theme="cappuccino"] {
+  --bg: #f1e9df;
+  --bg-sidebar: #efe6db;
+  --surface: #e5dace;
+  --surface-2: #e9dfd3;
+  --surface-hover: #dacdbf;
+  --line: #dfd3c5;
+  --line-strong: #c3b3a1;
+
+  --text: #2a211b;
+  --text-2: #463a31;
+  --text-3: #54473d;
+  --muted: #625549;
+
+  --accent: #484c9a;
+  --accent-bg: rgba(72, 76, 154, 0.09);
+  --green: #2c633f;
+  --green-bg: rgba(44, 99, 63, 0.09);
+  --daylight-gold: #6f5208;
+  --amber: #7d4b0d;
+  --amber-bg: rgba(125, 75, 13, 0.1);
+  --red: #8e3527;
+  --red-bg: rgba(142, 53, 39, 0.09);
+  --p-violet: #5a49b8;
+  --p-blue: #345da9;
+  --p-sky: #236582;
+  --p-teal: #206a5f;
+  --p-lime: #506719;
+  --p-orange: #934b20;
+  --p-rose: #a13d4e;
+  --p-pink: #933f88;
+  --p-sand: #735b3a;
+  --p-slate: #55606f;
+
+  color-scheme: light;
+}
+
+/* Coal: dark, 12-step OKLCH ramps (design/DESIGN.md, Color and theme). */
+:root[data-theme="coal"] {
+  --bg: #15110c;
+  --bg-sidebar: #100b07;
+  --surface: #1b1611;
+  --surface-2: #221d18;
+  --surface-hover: #29241f;
+  --line: #312b26;
+  --line-strong: #4a443e;
+  --text: #eee6e0;
+  --text-2: #d4ccc6;
+  --text-3: #bab3ad;
+  --muted: #a49d97;
+  --accent: #a2a8ff;
+  --accent-bg: rgba(162, 168, 255, 0.15);
+  --green: #82c38f;
+  --green-bg: rgba(130, 195, 143, 0.1);
+  --amber: #ea9d60;
+  --amber-bg: rgba(234, 157, 96, 0.16);
+  --red: #f98f85;
+  --red-bg: rgba(249, 143, 133, 0.1);
+  color-scheme: dark;
+}
+
+/* Graphite: dark, 12-step OKLCH ramps (design/DESIGN.md, Color and theme). */
+:root[data-theme="graphite"] {
+  --bg: #0f1216;
+  --bg-sidebar: #0a0c11;
+  --surface: #15171c;
+  --surface-2: #1c1e23;
+  --surface-hover: #23252a;
+  --line: #2a2d32;
+  --line-strong: #42454b;
+  --text: #e4e8ef;
+  --text-2: #caced5;
+  --text-3: #b1b4bb;
+  --muted: #9b9ea5;
+  --accent: #8baffe;
+  --accent-bg: rgba(139, 175, 254, 0.15);
+  --green: #82c38f;
+  --green-bg: rgba(130, 195, 143, 0.1);
+  --amber: #ea9d60;
+  --amber-bg: rgba(234, 157, 96, 0.16);
+  --red: #f98f85;
+  --red-bg: rgba(249, 143, 133, 0.1);
+  color-scheme: dark;
+}
+
+/* Ink: dark, 12-step OKLCH ramps (design/DESIGN.md, Color and theme). */
+:root[data-theme="ink"] {
+  --bg: #0d1218;
+  --bg-sidebar: #080d12;
+  --surface: #13181e;
+  --surface-2: #1a1e25;
+  --surface-hover: #21262c;
+  --line: #282d34;
+  --line-strong: #40464d;
+  --text: #e2e9f1;
+  --text-2: #c8cfd7;
+  --text-3: #afb5bd;
+  --muted: #999fa7;
+  --accent: #c0a0e7;
+  --accent-bg: rgba(192, 160, 231, 0.15);
+  --green: #82c38f;
+  --green-bg: rgba(130, 195, 143, 0.1);
+  --amber: #e99e5e;
+  --amber-bg: rgba(233, 158, 94, 0.16);
+  --red: #f98f85;
+  --red-bg: rgba(249, 143, 133, 0.1);
+  color-scheme: dark;
+}
+
+/* Forest: dark, 12-step OKLCH ramps (design/DESIGN.md, Color and theme). */
+:root[data-theme="forest"] {
+  --bg: #0c1410;
+  --bg-sidebar: #070e0b;
+  --surface: #111916;
+  --surface-2: #18201c;
+  --surface-hover: #1f2723;
+  --line: #262f2b;
+  --line-strong: #3e4743;
+  --text: #e0ebe5;
+  --text-2: #c6d1cb;
+  --text-3: #adb7b2;
+  --muted: #97a19c;
+  --accent: #bfb17e;
+  --accent-bg: rgba(191, 177, 126, 0.15);
+  --green: #82c38f;
+  --green-bg: rgba(130, 195, 143, 0.1);
+  --amber: #ea9d60;
+  --amber-bg: rgba(234, 157, 96, 0.16);
+  --red: #f98f85;
+  --red-bg: rgba(249, 143, 133, 0.1);
+  color-scheme: dark;
+}
+
+/* Aubergine: dark, 12-step OKLCH ramps (design/DESIGN.md, Color and theme). */
+:root[data-theme="aubergine"] {
+  --bg: #160f14;
+  --bg-sidebar: #110a0f;
+  --surface: #1c141a;
+  --surface-2: #231b21;
+  --surface-hover: #2a2228;
+  --line: #322a30;
+  --line-strong: #4b4248;
+  --text: #efe4ec;
+  --text-2: #d5cad2;
+  --text-3: #bbb1b8;
+  --muted: #a59ba2;
+  --accent: #dd96cd;
+  --accent-bg: rgba(221, 150, 205, 0.15);
+  --green: #82c38f;
+  --green-bg: rgba(130, 195, 143, 0.1);
+  --amber: #e79f5c;
+  --amber-bg: rgba(231, 159, 92, 0.16);
+  --red: #f98f85;
+  --red-bg: rgba(249, 143, 133, 0.1);
+  color-scheme: dark;
+}
+
+/* Smoke: dark, 12-step OKLCH ramps (design/DESIGN.md, Color and theme). */
+:root[data-theme="smoke"] {
+  --bg: #121111;
+  --bg-sidebar: #0d0c0b;
+  --surface: #181716;
+  --surface-2: #1f1e1d;
+  --surface-hover: #262524;
+  --line: #2d2c2b;
+  --line-strong: #464544;
+  --text: #e9e7e6;
+  --text-2: #cfcdcc;
+  --text-3: #b5b4b3;
+  --muted: #9f9e9d;
+  --accent: #b5b0ac;
+  --accent-bg: rgba(181, 176, 172, 0.15);
+  --green: #82c38f;
+  --green-bg: rgba(130, 195, 143, 0.1);
+  --amber: #ea9d60;
+  --amber-bg: rgba(234, 157, 96, 0.16);
+  --red: #f98f85;
+  --red-bg: rgba(249, 143, 133, 0.1);
+  color-scheme: dark;
+}
+
+/* Neutral: dark, from the unslop run (2026-11-06): a grey with no tint, so the colour lives in the
+   content, and a clear blue accent for the selection and the primary action. */
+:root[data-theme="neutral"] {
+  --bg: #141415;
+  --bg-sidebar: #0f0f10;
+  --surface: #19191b;
+  --surface-2: #1e1e20;
+  --surface-hover: #222224;
+  --line: #29292b;
+  --line-strong: #39393c;
+  --text: #ededed;
+  --text-2: #d4d4d7;
+  --text-3: #a8a8ad;
+  --muted: #8f8f95;
+  --accent: #7fb2f0;
+  --accent-bg: rgba(127, 178, 240, 0.14);
+  --green: #84c29a;
+  --green-bg: rgba(132, 194, 154, 0.1);
+  --amber: #ddaa5e;
+  --amber-bg: rgba(221, 170, 94, 0.14);
+  --red: #e5806f;
+  --red-bg: rgba(229, 128, 111, 0.1);
+  color-scheme: dark;
+}
+
+/* Paper: light, 12-step OKLCH ramps (design/DESIGN.md, Color and theme). */
+:root[data-theme="paper"] {
+  --bg: #f3f7fc;
+  --bg-sidebar: #ecf1f5;
+  --surface: #ecf1f5;
+  --surface-2: #e2e7eb;
+  --surface-hover: #d8dde2;
+  --line: #cfd3d8;
+  --line-strong: #adb1b6;
+  --text: #1f2225;
+  --text-2: #323538;
+  --text-3: #45484c;
+  --muted: #55585c;
+  --accent: #3658ac;
+  --accent-bg: rgba(54, 88, 172, 0.09);
+  --green: #2c6d3e;
+  --green-bg: rgba(44, 109, 62, 0.09);
+  --amber: #8b4b07;
+  --amber-bg: rgba(139, 75, 7, 0.1);
+  --red: #993935;
+  --red-bg: rgba(153, 57, 53, 0.09);
+  --daylight-gold: #6f5208;
+  --p-violet: #5a49b8;
+  --p-blue: #345da9;
+  --p-sky: #236582;
+  --p-teal: #206a5f;
+  --p-lime: #506719;
+  --p-orange: #934b20;
+  --p-rose: #a13d4e;
+  --p-pink: #933f88;
+  --p-sand: #735b3a;
+  --p-slate: #55606f;
+  color-scheme: light;
+}
+
+/* Sage: light, 12-step OKLCH ramps (design/DESIGN.md, Color and theme). */
+:root[data-theme="sage"] {
+  --bg: #f1faf2;
+  --bg-sidebar: #eaf3eb;
+  --surface: #eaf3eb;
+  --surface-2: #e0e9e1;
+  --surface-hover: #d6dfd8;
+  --line: #ccd5ce;
+  --line-strong: #abb4ac;
+  --text: #1d241e;
+  --text-2: #303731;
+  --text-3: #434a44;
+  --muted: #535a54;
+  --accent: #1d6c5b;
+  --accent-bg: rgba(29, 108, 91, 0.09);
+  --green: #2c6d3e;
+  --green-bg: rgba(44, 109, 62, 0.09);
+  --amber: #8b4b07;
+  --amber-bg: rgba(139, 75, 7, 0.1);
+  --red: #993935;
+  --red-bg: rgba(153, 57, 53, 0.09);
+  --daylight-gold: #6f5208;
+  --p-violet: #5a49b8;
+  --p-blue: #345da9;
+  --p-sky: #236582;
+  --p-teal: #206a5f;
+  --p-lime: #506719;
+  --p-orange: #934b20;
+  --p-rose: #a13d4e;
+  --p-pink: #933f88;
+  --p-sand: #735b3a;
+  --p-slate: #55606f;
+  color-scheme: light;
+}
+
+/* The Chat world: the same shapes on warm brown, as on the phone (Theme.swift `warm`). Titles are
+   serif. Status colours stay the same; only the default dark theme gets it, every named theme keeps its own colours. */
+:root[data-world="chat"]:not([data-theme]) {
+  --bg: #201b16;
+  --bg-sidebar: #1a1612;
+  --surface: #2b251f;
+  --surface-2: #30291f;
+  --surface-hover: #352e27;
+  --line: #352e27;
+  --line-strong: #473e34;
+
+  --text: #f1e9de;
+  --text-2: #cbbfae;
+  --text-3: #b8ac9b;
+  --muted: #a09484;
+
+  --accent: #e2b883;
+  --accent-bg: rgba(226, 184, 131, 0.16);
+  --serif: "Newsreader Variable", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+}
+:root[data-world="chat"] aside > header > h1,
+:root[data-world="chat"] main h1,
+:root[data-world="chat"] main .titles .title,
+:root[data-world="chat"] main .titles .title-input {
+  font-family: var(--serif);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+:root[data-world="chat"] aside > header > h1 { font-size: 20px; }
+/* A change of world is one move: the new world grows over the old as a circle (worldSwitch.ts). */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+* { box-sizing: border-box; }
+
+html, body, #app { height: 100%; margin: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text-2);
+  font: 14px/1.55 var(--font);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* Hub is an app, not a page: its own labels, cards and numbers cannot be marked. Text you would copy
+   opts back in with `user-select: text` where it lives: chat messages, code, terminals, logs, files,
+   documents and text boxes. Dragging across the app then marks nothing but those. */
+html, body {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+input, textarea, [contenteditable=""], [contenteditable="true"] { user-select: text; -webkit-user-select: text; }
+button, .btn { user-select: none; -webkit-user-select: none; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+/* A click leaves no focus box behind; the keyboard still gets one. The webview's own idea of
+   "keyboard" is not trusted (it keeps showing the frame on a mouse click after any key press), so
+   `inputMode.ts` marks the window `data-input="keys"` after Tab or an arrow key and `"mouse"` at
+   the next click, and the frame is drawn only in the first. Text boxes keep their own focus. */
+/* Press feedback (animation rule 4): one rule for every button. It uses the `scale` property, so it
+   composes with a button's own `transform`. Desktop pointers only; list rows, tabs, menu items and
+   switches opt out. Release returns on --ease; the press itself is 100ms. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  button:not(:disabled, .row, .no-press, [role="switch"], [role="tab"], [role="menuitem"], [role="option"], [aria-haspopup="listbox"]) {
+    transition: scale 0.16s var(--ease);
+  }
+  button:not(:disabled, .row, .no-press, [role="switch"], [role="tab"], [role="menuitem"], [role="option"], [aria-haspopup="listbox"]):active {
+    scale: 0.97; transition-duration: 0.1s;
+  }
+}
+button:focus { outline: none; }
+button:focus-visible { outline: 1.5px solid var(--accent); outline-offset: 2px; }
+html:not([data-input="keys"]) :focus-visible:not(input):not(textarea):not([contenteditable]) { outline: none; }
+/* Rows, tabs, menu items and links that are not a <button> get the same ring on keyboard focus. */
+[role="button"]:focus-visible, [role="link"]:focus-visible, [role="tab"]:focus-visible, [role="menuitem"]:focus-visible,
+[role="option"]:focus-visible, [role="switch"]:focus-visible, a:focus-visible, summary:focus-visible { outline: 1.5px solid var(--accent); outline-offset: 2px; }
+html:not([data-input="keys"]) :is([role="button"], [role="link"], [role="tab"], [role="menuitem"], [role="option"], [role="switch"], a, summary):focus-visible { outline: none; }
+
+input, textarea { font: inherit; color: var(--text); }
+
+code, kbd, .mono { font-family: var(--mono); font-size: calc(0.92em * var(--code-scale)); }
+
+::selection { background: var(--accent-bg); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--surface-hover); border-radius: var(--r-lg); border: 3px solid transparent; background-clip: content-box; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: var(--r-md);
+  background: var(--surface-hover);
+  color: var(--text-2);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--line-strong); color: var(--text); }
+.btn.primary { background: var(--accent-bg); color: var(--accent); }
+.btn.primary:hover { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+.btn.danger:hover { color: var(--red); }
+.btn:disabled { opacity: 0.5; cursor: default; }
+
+/* A thread's state, the same on every page and in the chat: a ring, filled when it is news.
+   Amber needs you, green works (a tiny working grid: three tiles, one gliding into the gap at a
+   time, the same move as WorkGrid.svelte at a size no SVG needs), red failed, lavender done since you last looked,
+   grey idle. Colour is only ever for state; what a thing is shows as a grey glyph (Ref.svelte). */
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; display: inline-block; box-sizing: border-box; }
+.dot.running {
+  width: 9px; height: 9px; border-radius: 1px;
+  background: linear-gradient(var(--green), var(--green)), linear-gradient(var(--green), var(--green)), linear-gradient(var(--green), var(--green));
+  background-size: 4px 4px; background-repeat: no-repeat; background-position: 0px 0px, 5px 0px, 5px 5px;
+  animation: dot-cube 15.6s cubic-bezier(0.3, 1.4, 0.5, 1) infinite; /* the working-cube exception */
+}
+.dot.waiting_on_you { border: 1.5px solid var(--amber); }
+.dot.idle { border: 1.5px solid var(--muted); }
+.dot.error { background: var(--red); }
+.dot.in_terminal { border: 1.5px solid var(--accent); }
+/* Done since you last opened it. */
+.dot.idle.unread { background: var(--accent); border: 0; }
+
+/* The glyph that says what a thing is (refs.ts), and a machine's or service's green dot while it is up. */
+.glyph { width: 0.95em; height: 0.95em; margin-right: 4px; flex: none; fill: none; stroke: var(--muted); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.glyph.open, .glyph.draft { stroke: var(--green); }
+.glyph.merged { stroke: var(--accent); }
+.glyph.closed { stroke: var(--red); }
+.up { display: inline-block; width: 5px; height: 5px; margin-left: 4px; border-radius: 50%; background: var(--green); flex: none; }
+
+@keyframes pulse { 50% { opacity: 0.45; } }
+@keyframes dot-cube {
+  0% { background-position: 0px 0px, 5px 0px, 5px 5px; }
+  3.75% { background-position: 0px 0px, 5px 0px, 0px 5px; }
+  8.333% { background-position: 0px 0px, 5px 0px, 0px 5px; }
+  12.083% { background-position: 0px 0px, 5px 5px, 0px 5px; }
+  16.667% { background-position: 0px 0px, 5px 5px, 0px 5px; }
+  20.417% { background-position: 5px 0px, 5px 5px, 0px 5px; }
+  25% { background-position: 5px 0px, 5px 5px, 0px 5px; }
+  28.75% { background-position: 5px 0px, 5px 5px, 0px 0px; }
+  33.333% { background-position: 5px 0px, 5px 5px, 0px 0px; }
+  37.083% { background-position: 5px 0px, 0px 5px, 0px 0px; }
+  41.667% { background-position: 5px 0px, 0px 5px, 0px 0px; }
+  45.417% { background-position: 5px 5px, 0px 5px, 0px 0px; }
+  50% { background-position: 5px 5px, 0px 5px, 0px 0px; }
+  53.75% { background-position: 5px 5px, 0px 5px, 5px 0px; }
+  58.333% { background-position: 5px 5px, 0px 5px, 5px 0px; }
+  62.083% { background-position: 5px 5px, 0px 0px, 5px 0px; }
+  66.667% { background-position: 5px 5px, 0px 0px, 5px 0px; }
+  70.417% { background-position: 0px 5px, 0px 0px, 5px 0px; }
+  75% { background-position: 0px 5px, 0px 0px, 5px 0px; }
+  78.75% { background-position: 0px 5px, 0px 0px, 5px 5px; }
+  83.333% { background-position: 0px 5px, 0px 0px, 5px 5px; }
+  87.083% { background-position: 0px 5px, 5px 0px, 5px 5px; }
+  91.667% { background-position: 0px 5px, 5px 0px, 5px 5px; }
+  95.417% { background-position: 0px 0px, 5px 0px, 5px 5px; }
+  100% { background-position: 0px 0px, 5px 0px, 5px 5px; }
+}
+@media (prefers-reduced-motion: reduce) { .dot.running { animation: none; } }
+
+.label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* A full-width page: no max width, just the gutter. */
+.page-fill { padding: var(--page-top) var(--gutter) 60px; min-width: 0; container-type: inline-size; }
+/* Columns that multiply with the room: one on a narrow window, three or four on a wide one. */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--tile, 340px)), 1fr)); gap: 14px; align-items: start; }
+/* A main column with a rail beside it, stacked when the window is narrow. */
+.with-rail { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 14px; align-items: start; }
+.with-rail > * { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+@container (max-width: 880px) { .with-rail { grid-template-columns: minmax(0, 1fr); } }
+
+/* Settings > Appearance > Reduce motion: nothing slides or fades. */
+:root.calm *, :root.calm *::before, :root.calm *::after {
+  transition-duration: 0s !important;
+  animation-duration: 0s !important;
+  animation-iteration-count: 1 !important;
+}
+:root.calm { --stagger: 0ms; }
+/* A hidden window runs no loop: `boot.ts` marks the page `data-hidden` while the tab or window is not shown. */
+:root[data-hidden] *, :root[data-hidden] *::before, :root[data-hidden] *::after { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) {
+  :root { --stagger: 0ms; }
+  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; animation-iteration-count: 1 !important; }
+}
+
+/* Code colours (highlight.js classes), from the theme's own tokens so both themes stay calm. */
+.hljs { color: var(--text-2); }
+.hljs-comment, .hljs-quote { color: var(--muted); font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-type, .hljs-literal, .hljs-doctag, .hljs-meta .hljs-keyword { color: var(--accent); }
+.hljs-string, .hljs-regexp, .hljs-addition, .hljs-template-tag, .hljs-symbol, .hljs-char.escape_ { color: var(--green); }
+.hljs-number, .hljs-bullet, .hljs-variable.constant_, .hljs-selector-attr, .hljs-selector-pseudo { color: var(--amber); }
+.hljs-title, .hljs-title.function_, .hljs-title.class_, .hljs-section { color: var(--text); }
+.hljs-attr, .hljs-attribute, .hljs-property, .hljs-name, .hljs-selector-id, .hljs-selector-class, .hljs-tag { color: var(--text-3); }
+.hljs-params, .hljs-variable, .hljs-template-variable, .hljs-subst { color: var(--text-2); }
+.hljs-meta, .hljs-link { color: var(--muted); }
+.hljs-deletion { color: var(--red); }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 600; }
+
+/* Ctrl F in a thread (find.ts): every match, and the one you are on. */
+::highlight(find) { background-color: var(--amber-bg); color: var(--text); }
+::highlight(find-current) { background-color: var(--amber); color: var(--bg); }
+
+/* Hover tips (lib/tooltip.ts): Hub's own instead of the system's. A raised surface, quiet text,
+   keys drawn as keys. Sizes are written in px, so they grow with Text size like all text. */
+.hub-tip {
+  position: fixed; z-index: 200; left: 0; top: 0; pointer-events: none;
+  display: flex; align-items: baseline; gap: 10px; width: max-content; max-width: 340px;
+  padding: 4px 8px; border-radius: var(--r-sm); background: var(--surface-2); border: 1px solid var(--line-strong);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35); color: var(--text-2); font-size: 13px; line-height: 1.4;
+  opacity: 0; visibility: hidden; transform: translateY(-2px); transition: opacity 0.1s var(--ease), transform 0.1s var(--ease), visibility 0s 0.1s var(--ease);
+}
+.hub-tip[data-side="above"] { transform: translateY(2px); }
+.hub-tip.on { opacity: 1; visibility: visible; transform: none; transition: opacity 0.1s var(--ease), transform 0.1s var(--ease); }
+.hub-tip-text { min-width: 0; white-space: pre-line; overflow-wrap: anywhere; }
+.hub-tip-keys { display: inline-flex; gap: 3px; flex: none; }
+.hub-tip kbd {
+  font-family: var(--font); font-size: 11px; line-height: 1.4; color: var(--muted);
+  padding: 0 4px; border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: var(--r-xs);
+}
+:root[data-theme="cappuccino"] .hub-tip, :root[data-theme="paper"] .hub-tip, :root[data-theme="sage"] .hub-tip { box-shadow: 0 6px 20px rgba(60, 40, 20, 0.18); }
+
+/* A rack: bordered rows of things that run, each with a mark in a side column, its name, a line
+   of mono detail and lamps for where it works (Settings > Engines). Shared so every list of
+   engines, providers and machines looks the same. */
+.rack { border: 1px solid var(--line-strong); border-radius: var(--r-lg); overflow: hidden; }
+.rack + .rack { margin-top: 10px; }
+.rack-row + .rack-row, .rack-row + .rack-add { border-top: 1px solid var(--line); }
+.rack-face { width: 100%; display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; min-height: 54px; text-align: left; color: inherit; }
+.rack-badge { align-self: stretch; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--line); background: var(--bg-sidebar); color: var(--text-3); }
+.rack-main { padding: 8px 14px; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.rack-name { font-size: 14px; color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rack-sub { font: 12px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rack-end { display: flex; align-items: center; gap: 8px; padding-right: 12px; }
+.rack-more { padding: 0 14px 10px 62px; font-size: 13px; color: var(--text-2); display: flex; flex-direction: column; gap: 6px; }
+.rack-add { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 14px 8px 62px; color: var(--muted); font-size: 13px; text-align: left; }
+.rack-add:hover { color: var(--text); background: color-mix(in srgb, var(--surface-hover) 45%, transparent); }
+.led-box { display: flex; flex-direction: column; align-items: center; gap: 4px; font: 11px var(--mono); color: var(--muted); max-width: 70px; white-space: nowrap; }
+.lamp { width: 7px; height: 7px; border-radius: 50%; border: 1px solid var(--line-strong); flex: none; display: inline-block; }
+.lamp.on { background: var(--green); border-color: var(--green); }
+.lamp.bad { background: var(--red); border-color: var(--red); }
+.lamp.busy { border-color: var(--amber); background: var(--amber); }
+/* Success pulse (ANIMATION.md rule 8): once, 200ms, then still. Add the class when the success happens. */
+@keyframes pulse-ok { 50% { transform: scale(1.06); } }
+.pulse-ok { animation: pulse-ok 0.2s var(--ease) 1; }
+@media (prefers-reduced-motion: reduce) { .pulse-ok { animation: none; } }
+.calm .pulse-ok { animation: none; }
+
+/* A fix thread sent off from Problems: a dot that flies to Inbox's icon (`fixes.svelte.ts`). */
+.fix-dot {
+  position: fixed; z-index: 1000; width: 9px; height: 9px; border-radius: 50%; pointer-events: none;
+  background: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg);
+}

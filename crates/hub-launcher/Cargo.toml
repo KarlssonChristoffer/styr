@@ -1,0 +1,9 @@
+[package]
+name = "hub-launcher"
+description = "Starts the current version of Hub. The Start menu shortcut points here."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+hub-install = { path = "../hub-install" }

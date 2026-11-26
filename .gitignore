@@ -1,0 +1,18 @@
+/target
+node_modules/
+/app/dist
+*.db
+*.db-wal
+*.db-shm
+.env
+
+# Xcode DerivedData from stray local iOS builds
+/dd/
+
+# Local state that must never be published
+*.sqlite
+*.sqlite3
+*.log
+.env.*
+.claude/settings.local.json
+.DS_Store

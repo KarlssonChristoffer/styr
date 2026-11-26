@@ -1,0 +1,33 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "The main window and popped-out viewers talk to the core over HTTP. Locally they set their zoom, draw their own title bar, pick folders, show notifications and use the app's own commands.",
+  "windows": [
+    "main",
+    "viewer-*"
+  ],
+  "permissions": [
+    "core:default",
+    "core:webview:allow-set-webview-zoom",
+    "core:window:allow-set-title",
+    "core:window:allow-request-user-attention",
+    "core:window:allow-set-focus",
+    "core:window:allow-start-dragging",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-close",
+    "dialog:allow-open",
+    "dialog:allow-message",
+    "notification:default",
+    "allow-relaunch",
+    "allow-open-dev-window",
+    "allow-open-viewer-window",
+    "allow-let-foreground",
+    "allow-set-local-core",
+    "allow-core-token",
+    "allow-live-go",
+    "allow-live-leave",
+    "allow-live-beat",
+    "allow-live-take"
+  ]
+}

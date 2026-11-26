@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-set-local-core"
+description = "Enables the set_local_core command without any pre-configured scope."
+commands.allow = ["set_local_core"]
+
+[[permission]]
+identifier = "deny-set-local-core"
+description = "Denies the set_local_core command without any pre-configured scope."
+commands.deny = ["set_local_core"]

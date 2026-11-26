@@ -1,0 +1,8 @@
+GET /api/health
+GET /api/threads
+GET /api/threads/{id}
+GET /api/threads/{id}/events
+GET /api/stream
+POST /api/threads/{id}/messages
+POST /api/threads/{id}/cancel
+POST /api/threads/{id}/permissions/{request}

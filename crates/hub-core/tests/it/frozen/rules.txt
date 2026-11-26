@@ -1,0 +1,14 @@
+controls app/src/lib/components/ActivityList.svelte 1
+controls app/src/lib/components/BagMenu.svelte 1
+controls app/src/lib/components/CardMenu.svelte 1
+controls app/src/lib/components/Composer.svelte 1
+controls app/src/lib/components/EmojiPicker.svelte 1
+controls app/src/lib/components/ProjectIconPicker.svelte 1
+controls app/src/lib/components/RoutinesView.svelte 1
+engine crates/hub-core/src/activity/mod.rs 2
+engine crates/hub-core/src/lib.rs 1
+own_clip app/src/lib/fold.ts 1
+own_clip app/src/lib/format.ts 1
+set_interval app/src/lib/autoInstall.ts 1
+set_interval app/src/lib/composerVoice.svelte.ts 1
+set_interval app/src/lib/live.svelte.ts 1

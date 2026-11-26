@@ -1,0 +1,6 @@
+{
+  "_why": "Keys a client in the field reads, with their JSON type. A new Hub keeps sending every one of them for good; add keys here, never remove or retype one.",
+  "thread": {"id":"string","title":"string","cwd":"string","engine":"string","status":"string","archived":"boolean","created_at":"number","updated_at":"number"},
+  "event": {"thread_id":"string","seq":"number","ts":"number","kind":"string","data":"any"},
+  "health": {"ok":"boolean","version":"string","protocol":"number","schema":"number","core":"number","features":"array"}
+}

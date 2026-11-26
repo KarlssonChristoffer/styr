@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "install",
+  "description": "The card shown on the desktop while Hub installs a new version only shows itself and can be moved.",
+  "windows": ["install"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging"
+  ]
+}

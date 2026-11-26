@@ -1,0 +1,24 @@
+# Aftermath in Hub: Hub finds this file in Aftermath's folder and shows whether ambient capture is
+# working, in the Workers view and to Hub's agents. Runs from the checkout, no install needed.
+# The paths default to ~/.aftermath; set AFTERMATH_DOGFOOD_STATE_DIR and AFTERMATH_DOGFOOD_DB where
+# hubd runs to point elsewhere. Format: Hub's docs/ARCHITECTURE.md, "Your tools".
+name = "Aftermath"
+about = "Records what actually happened, and compares how the work was done."
+env = { PYTHONPATH = "src" }
+
+[status]
+run = [
+  "python3", "-m", "aftermath.cli.main", "status", "--json",
+  "--state-dir", "${AFTERMATH_DOGFOOD_STATE_DIR:-~/.aftermath}/ambient",
+  "--capture-state-dir", "${AFTERMATH_DOGFOOD_STATE_DIR:-~/.aftermath}/claude",
+]
+headline = "Capture is {/overall}"
+state = "/overall"
+
+[[list]]
+title = "Checks"
+items = "/checks"
+text = "/name"
+state = "/status"
+detail = "/detail"
+limit = 12

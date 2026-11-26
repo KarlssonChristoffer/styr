@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- hub://thread/<id> opens that thread: the link an ntfy notice carries (ntfy.rs in hubd). -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>se.karlsson.hub</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>hub</string>
+			</array>
+		</dict>
+	</array>
+	<!-- Lets animations run at 120 Hz on ProMotion iPhones; without it an app's own animations stop at 60. -->
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>ntfy</string>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,9 @@
+[package]
+name = "hub-install"
+description = "Where an installed Hub lives on disk. No dependencies, so the launcher and app stay small."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dev-dependencies]
+tempfile = "3"

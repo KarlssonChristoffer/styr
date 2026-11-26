@@ -1,0 +1,11 @@
+user_message
+update
+permission_request
+permission_resolved
+turn_end
+error
+slept
+reaction
+task
+ask
+status

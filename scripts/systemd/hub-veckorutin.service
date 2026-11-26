@@ -1,0 +1,8 @@
+[Unit]
+Description=Hub weekly routine (garden, pins, mutants)
+[Service]
+Type=oneshot
+ExecStart=%h/Dev/hub-veckorutin/scripts/veckorutin.sh
+Environment=PATH=%h/.cargo/bin:%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+Nice=10
+MemoryMax=8G

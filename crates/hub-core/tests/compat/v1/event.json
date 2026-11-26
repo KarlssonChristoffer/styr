@@ -1,0 +1,6 @@
+[{"thread_id":"t1","seq":1,"ts":1700000000000,"kind":"user_message","data":{"text":"hi"}},
+{"thread_id":"t1","seq":2,"ts":1700000001000,"kind":"update","data":{"sessionUpdate":"agent_message_chunk","content":{"type":"text","text":"hello"}}},
+{"thread_id":"t1","seq":3,"ts":1700000002000,"kind":"permission_request","data":{"id":"7","tool_call":{},"options":[]}},
+{"thread_id":"t1","seq":4,"ts":1700000003000,"kind":"permission_resolved","data":{"id":"7","option_id":"allow_once"}},
+{"thread_id":"t1","seq":5,"ts":1700000004000,"kind":"turn_end","data":{"stop_reason":"end_turn"}},
+{"thread_id":"t1","seq":6,"ts":1700000005000,"kind":"error","data":{"message":"boom"}}]

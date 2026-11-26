@@ -1,0 +1,15 @@
+:root {
+  color-scheme: light dark;
+  --gap: 1.25rem;
+}
+
+body {
+  margin: 0;
+  font: 1rem/1.6 system-ui, sans-serif;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: calc(var(--gap) * 2) var(--gap);
+}

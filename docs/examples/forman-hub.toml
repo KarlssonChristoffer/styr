@@ -1,0 +1,83 @@
+# Forman in Hub: Hub finds this file in Forman's folder and shows Forman in its Workers view, with
+# what waits on you and the commands below as buttons. Hub's agents get the same through Hub's
+# tools. Every command runs in this folder, the same argument vector a person could type, so Hub
+# never has a button the CLI lacks. Format: Hub's docs/ARCHITECTURE.md, "Your tools".
+name = "Forman"
+about = "The foreman over Knegarn: agenda, questions, decisions."
+
+[status]
+run = ["python3", "-m", "forman", "now", "--json"]
+headline = "/headline"
+state = "/status_word"
+detail = "/status_reason"
+
+[[list]]
+title = "Waiting on you"
+items = "/questions"
+# Only questions nothing but a person can move on; one with a default and a deadline clears itself.
+where = { status = "open", blocking = true }
+id = "/id"
+text = "/question"
+detail = "{/title} · default: {/default}"
+needs_you = true
+
+[[list]]
+title = "Agenda"
+items = "/agenda"
+id = "/id"
+text = "/title"
+state = "/status"
+detail = "{/id} · p{/priority}"
+
+[[list]]
+title = "Journal"
+items = "/events"
+reverse = true
+text = "/text"
+detail = "{/count}×"
+
+[[action]]
+id = "answer"
+label = "Answer"
+on = "Waiting on you"
+ask = ["text"]
+run = ["python3", "-m", "forman", "answer", "{id}", "{text}"]
+
+[[action]]
+id = "park"
+label = "Park"
+on = "Agenda"
+ask = ["reason"]
+run = ["python3", "-m", "forman", "park", "{id}", "--reason", "{reason}"]
+
+[[action]]
+id = "nudge"
+label = "Nudge"
+ask = ["text"]
+about = "A note to the agents; they read it on their next turn."
+run = ["python3", "-m", "forman", "nudge", "{text}"]
+
+[[action]]
+id = "pause"
+label = "Pause"
+ask = ["reason"]
+about = "Observe only: nothing new starts until Resume."
+run = ["python3", "-m", "forman", "pause", "--reason", "{reason}"]
+
+[[action]]
+id = "resume"
+label = "Resume"
+run = ["python3", "-m", "forman", "resume"]
+
+[[action]]
+id = "halt"
+label = "Halt"
+ask = ["reason"]
+danger = true
+about = "The kill switch: every service stops and serve refuses to start until Clear halt."
+run = ["python3", "-m", "forman", "halt", "--reason", "{reason}"]
+
+[[action]]
+id = "clear-halt"
+label = "Clear halt"
+run = ["python3", "-m", "forman", "clear-halt"]

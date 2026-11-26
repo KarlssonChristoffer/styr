@@ -1,0 +1,154 @@
+# Knegarn in Hub: Hub finds this file in Knegarn's folder and shows its runs in the Workers view,
+# read through READ-CONTRACT-V1 (`knegarn.py inspect`), never the store. Work reaches Knegarn only
+# as a mandate from its controller ([handoff] below); the only hands on a running run are the
+# person's stop, pause and more room ([[worker.control]], control.py). Format: Hub's
+# docs/ARCHITECTURE.md, "Your tools" and "Workers".
+name = "Knegarn"
+about = "Runs approved mandates unattended and hands back a pull request."
+
+[[list]]
+title = "Needs a human"
+run = ["python3", "knegarn.py", "inspect", "runs", "--limit", "50"]
+items = "/runs"
+where = { outcome = "needs_human" }
+id = "/run_id"
+text = "/title"
+state = "/escalation/reason"
+detail = "{/project} · {/escalation/detail}"
+link = "/delivery/pr_url"
+needs_you = true
+
+[[list]]
+title = "Runs"
+run = ["python3", "knegarn.py", "inspect", "runs", "--limit", "50"]
+items = "/runs"
+id = "/run_id"
+text = "/title"
+state = "/outcome"
+detail = "{/project} · {/phase} · {/started_at}"
+link = "/delivery/pr_url"
+
+# "Hand to Knegarn" on a Hub thread: Hub drafts the contract below from the thread, the person
+# reads and edits it, and pressing the button authorizes it. hub_handoff.py finds the project for
+# the thread's repository in projects.toml, stamps the marker against origin/main, writes the
+# mandate and starts a pass. The run then shows under Runs, as far as the project's
+# execution_mode lets it go.
+[handoff]
+label = "Hand to Knegarn"
+about = "Knegarn builds it unattended: tests in Docker, a fresh reviewer, repairs until green."
+run = ["python3", "hub_handoff.py", "--repo", "{repo}", "--title", "{title}", "--work", "{work}", "--brief-file", "{brief_file}"]
+# The person ticked "Let it build": the project moves from dry_run to local for this handoff.
+build = ["--mode", "local"]
+# Exit 3 means Knegarn has no project for the repository yet; it prints what to ask (`ask`), and Hub
+# hands over again with each answer as --name.
+needs_exit = 3
+# Hub asks this every few minutes until the run ended: its verdict, cost and PR come back to the thread.
+follow = ["python3", "hub_handoff.py", "--follow", "{work}"]
+guide = """
+Write an execution contract for Knegarn. It is the whole brief the build agent gets and the whole
+rubric the reviewer judges against, so it must stand on its own. Use exactly these sections, as
+`## ` headings, in this order:
+
+## Goal
+One or two sentences: what changes and why.
+## Repo conventions that apply
+The rules from CLAUDE.md/AGENTS.md this change must follow.
+## Files
+A bullet per file to change or create, with what changes in it. Mark a new file with (new).
+## Acceptance criteria
+A bullet list of checks the reviewer can verify from the diff and the tests. Required.
+## Verification
+The exact commands that prove it (the project's tests). Required.
+## Envelope
+How big the change may be: files and lines, and what must not be touched.
+## Out of scope
+What not to do, even if it looks related.
+## If blocked
+What to do when something in the contract turns out to be wrong.
+
+Keep it to one change a reviewer can judge. Do not write the KNEGARN-CONTRACT marker line; it is
+stamped when the contract is handed over.
+"""
+
+# A Knegarn run as a thread in Hub: the run handed over from a thread shows in that thread, a run
+# from elsewhere gets a thread of its own. Hub reads runs and replays each run's event journal
+# with its own cursor (READ-CONTRACT-V1, `run_events`), and draws the steps below as the chain in
+# the inbox: the step whose phase the latest event names is the one going on.
+[worker]
+label = "Knegarn run"
+runs = ["python3", "knegarn.py", "inspect", "runs", "--limit", "30"]
+items = "/runs"
+id = "/run_id"
+title = "/title"
+work = "/work_ref"
+started = "/started_at"
+ended = "/terminal_status"
+state = "/outcome"
+said = "/escalation/reason"
+link = "/delivery/pr_url"
+cost = "/budget/cost_usd"
+events = ["python3", "knegarn.py", "inspect", "events", "{run}", "--after", "{seq}"]
+agent = "/data/role"
+model = "/data/model"
+pause = "/data/action"
+# Hub runs this after installing Knegarn from the Plugins page, and again on "Check again".
+ready = ["python3", "doctor.py", "--json", "--skip-claude-probe"]
+
+[[worker.step]]
+id = "build"
+label = "Build"
+phases = ["implementing"]
+
+[[worker.step]]
+id = "test"
+label = "Test"
+phases = ["measuring", "verifying"]
+
+[[worker.step]]
+id = "review"
+label = "Review"
+phases = ["reviewing"]
+
+[[worker.step]]
+id = "repair"
+label = "Repair"
+phases = ["repairing"]
+
+[[worker.step]]
+id = "final"
+label = "Final test"
+phases = ["final_verifying"]
+
+[[worker.step]]
+id = "deliver"
+label = "PR"
+phases = ["deliverable"]
+
+[[worker.control]]
+id = "pause"
+label = "Pause"
+about = "Waits at the next step until resumed. Paused time is not charged to the run."
+run = ["python3", "control.py", "--by", "hub", "pause", "{run}"]
+when = "running"
+
+[[worker.control]]
+id = "resume"
+label = "Resume"
+run = ["python3", "control.py", "--by", "hub", "resume", "{run}"]
+when = "paused"
+
+[[worker.control]]
+id = "more"
+label = "More room"
+about = "More time and rounds. It widens the run's budget, so pressing it is an authorization."
+run = ["python3", "control.py", "--by", "hub", "more", "{run}", "--minutes", "{minutes}", "--repair-rounds", "{rounds}", "--review-rounds", "{rounds}", "--authorization-ref", "{authorization}"]
+ask = ["minutes", "rounds"]
+when = "running"
+
+[[worker.control]]
+id = "stop"
+label = "Stop"
+about = "Ends the run at the next step. What it built stays on its branch."
+run = ["python3", "control.py", "--by", "hub", "stop", "{run}"]
+danger = true
+when = "running"

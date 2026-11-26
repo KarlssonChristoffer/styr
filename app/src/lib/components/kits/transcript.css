@@ -1,0 +1,170 @@
+/* The look of the chat's rows (messages, work lines, notes and breaks). Pasted into Transcript.svelte
+   and the row components it hands work to by a comment reading "@kit transcript" (svelte.config.js). */
+.from { display: inline-flex; align-items: center; gap: 3px; margin-right: 6px; }
+button.from { color: inherit; font-size: inherit; }
+button.from:hover { color: var(--text-2); }
+.user { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; margin: 18px 0 10px; }
+.bubble {
+  user-select: text; -webkit-user-select: text;
+  background: var(--surface-hover); color: var(--text); padding: 8px 14px;
+  border-radius: var(--r-lg); max-width: 80%; white-space: pre-wrap; font-size: calc(14.5px * var(--chat-scale));
+}
+.sent { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: flex-end; gap: 6px; max-width: 80%; }
+.sent img { max-width: 220px; max-height: 160px; border-radius: var(--r-lg); border: 1px solid var(--line); object-fit: cover; }
+.file.thread, .file.link { font-family: var(--font); }
+.file.link:hover { color: var(--text); }
+button.file:not(.thread):hover, .file.open { color: var(--text); }
+.file-text {
+  user-select: text; -webkit-user-select: text;
+  margin: 0; max-width: 80%; max-height: 320px; overflow: auto; padding: 8px 10px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+  font-size: 12px; line-height: 1.45; color: var(--text-2); white-space: pre;
+}
+.file.thread:hover:not(:disabled) { color: var(--text); }
+.file { display: inline-flex; align-items: center; gap: 4px; background: var(--surface); color: var(--text-3); border-radius: var(--r-md); padding: 3px 8px; font-size: 12px; font-family: var(--mono); }
+.original { display: flex; flex-direction: column; align-items: flex-end; max-width: 80%; color: var(--muted); font-size: 12px; }
+.original summary { padding-right: 4px; }
+.original[open] summary { margin-bottom: 4px; }
+.original .bubble { max-width: 100%; color: var(--text-3); background: var(--surface); font-size: 14px; }
+.time { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px 10px; color: var(--muted); font-size: 12px; padding-right: 4px; max-width: 80%; }
+/* Copy and Edit show on hover, or when reached with Tab. */
+.acts { display: inline-flex; gap: 2px; opacity: 0; transition: opacity 0.12s var(--ease); }
+.user:hover .acts, .acts:focus-within { opacity: 1; }
+@media (hover: none) { .acts { opacity: 1; } }
+.act { display: grid; place-items: center; min-width: 1.9em; min-height: 1.9em; border-radius: var(--r-sm); color: var(--muted); }
+.act:hover { color: var(--text); background: var(--surface-hover); }
+.editing { display: flex; flex-direction: column; gap: 6px; width: min(80%, var(--chat-text, 100%)); min-width: min(100%, 22em); }
+.editing textarea {
+  resize: none; background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: var(--r-lg); padding: 8px 14px;
+  font: inherit; font-size: 15px; line-height: 1.5; color: var(--text); outline: none;
+}
+.editing textarea:focus { border-color: var(--accent); }
+.edit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.edit-row .grow { flex: 1; }
+.opt { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-3); cursor: pointer; }
+.kept { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); }
+.edit-hint { color: var(--muted); font-size: 12px; text-align: right; }
+.rewound summary { display: flex; align-items: flex-start; gap: 8px; color: var(--text-3); }
+.rewound summary :global(svg) { margin-top: 2px; flex: none; }
+.rewound[open] .chev { transform: rotate(90deg); }
+.cut { margin: 8px 0 4px 6px; padding-left: 12px; border-left: 1px solid var(--line-strong); opacity: 0.7; display: flex; flex-direction: column; gap: 6px; }
+.cut-user { display: flex; justify-content: flex-end; }
+.cut-user .bubble { font-size: 14px; }
+.cut-agent { user-select: text; -webkit-user-select: text; font-size: 14px; line-height: 1.6; color: var(--text-2); }
+.cut-note { font-style: italic; }
+.assistant { user-select: text; -webkit-user-select: text; font-family: var(--chat-font); font-size: calc(14.5px * var(--chat-scale)); line-height: var(--chat-lh); margin: 6px 0 12px; }
+/* Answers use the whole chat column, so text, turn footer, dividers and composer share one right edge. */
+.activity { margin: 4px 0 8px; font-size: 13px; }
+/* A web search: the globe in the accent, the working grid in its place while it looks; the pages as small rows. */
+.activity.web .globe { display: inline-grid; color: var(--accent); }
+.activity.web.now .line .text { color: var(--accent); }
+.web-steps { display: flex; flex-direction: column; gap: 3px; font-size: 13px; color: var(--text-3); }
+.web-steps .query { color: var(--text-2); }
+.web-steps .page { display: flex; align-items: center; gap: 8px; text-align: left; color: var(--text-3); padding: 1px 0; min-width: 0; }
+.web-steps .page:hover .grow { color: var(--text); }
+.web-steps .grow { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
+.web-steps .host { color: var(--muted); font-size: 12px; }
+.site { width: 14px; height: 14px; border-radius: 3px; flex: none; display: inline-grid; place-items: center; --keep-size: 1; font-size: 9px; font-weight: 700; color: #1a1918; }
+.sources { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.source { display: flex; align-items: center; gap: 8px; max-width: 250px; padding: 6px 10px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); text-align: left; }
+.source:hover { border-color: var(--line-strong); }
+.source .what { display: flex; flex-direction: column; min-width: 0; }
+.source b { font-size: 13px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.source small { font-size: 11px; color: var(--muted); }
+.webtag { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+.line { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; color: var(--muted); padding: 3px 6px; margin-left: -6px; border-radius: var(--r-sm); }
+.line:hover { color: var(--text-3); background: var(--surface); }
+.line .text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.activity.now .line .text { color: var(--text-3); }
+.activity .dot { background: var(--line-strong); }
+.activity .dot.failed { background: var(--red); }
+/* The quietest level's word: the working grid (WorkGrid.svelte) and a word with a slow shimmer, no clock (the status line has it). */
+.word { display: flex; align-items: center; gap: 12px; padding: 3px 0; font-size: 14px; }
+.word .text { color: var(--muted); }
+.word .of { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.word .text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:global(.calm) .word .text { animation: none; }
+:global(.calm) .word .text { background: none; color: var(--text-3); }
+.fold { margin: 2px 0 6px -6px; font-size: 13px; }
+.fold-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.fold-row .fold { min-width: 0; }
+/* The work a fold holds, opened: the notes small and grey along a line, the steps under them. */
+.inner { border-left: 1px solid var(--line-strong); margin-left: 3px !important; padding-left: 12px; }
+.assistant.inner { font-size: 13px; line-height: 1.5; color: var(--text-3); margin: 0; padding-top: 1px; padding-bottom: 4px; }
+.assistant.inner :global(:is(.md, p, li)) { font-size: inherit; line-height: inherit; color: var(--text-3); }
+.assistant.inner :global(:is(p, ul, ol)) { margin: 0; }
+.activity.inner { margin: 0; padding-top: 1px; padding-bottom: 3px; }
+/* The rows of one live turn (fold, step, status line) share one look: a 14px slot, a quiet dot, the same grey. */
+.line .dot { margin: 0 3px; }
+.fold .dot.done { background: var(--green); opacity: 0.7; }
+.fold.running .dot.done { background: var(--line-strong); opacity: 1; }
+.fold.running .text { color: var(--text-3); }
+.fold .dot.failed { background: var(--red); opacity: 1; }
+.chev { display: grid; transition: transform 0.12s var(--ease); opacity: 0.7; }
+.chev.open { transform: rotate(90deg); }
+.steps { border-left: 1px solid var(--line-strong); margin: 4px 0 4px 8px; padding-left: 12px; }
+/* A tool row: grey glyph for the kind of work, its name, its clock and exit code, and under it
+   the last line it printed. Only state is coloured: running green, gone wrong red. */
+.step summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 8px; align-items: center; padding: 3px 0; color: var(--text-3); }
+.step .glyph { display: grid; color: var(--muted); }
+.step .name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.step.bad .name { color: var(--red); }
+.step .status { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.step .status :global(.work-grid) { display: inline-block; }
+.step .code { font-family: var(--mono); font-size: 12px; }
+.step .code.bad { color: var(--red); }
+.step .end { grid-column: 2 / -1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 12px; }
+.step[open] .end { display: none; }
+.step p { white-space: pre-wrap; color: var(--muted); margin: 4px 0 8px; }
+.tail {
+  display: flex; align-items: flex-end; gap: 10px; width: calc(100% - 9px); text-align: left;
+  margin: 4px 0 2px 8px; padding: 6px 10px; border-left: 1px solid var(--line-strong); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+.tail:hover { background: var(--surface); }
+.tail > :global(.out) { flex: 1; min-width: 0; color: var(--muted); font-size: 12px; white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+.tail .quiet { flex: 1; color: var(--muted); font-family: var(--mono); font-size: 12px; font-style: italic; }
+.tail .took { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cmdline { user-select: text; -webkit-user-select: text; color: var(--text-2); font-size: 12px; margin: 2px 0 4px; white-space: pre-wrap; word-break: break-word; }
+.step :global(.out.scroll) { margin-bottom: 4px; }
+.exit { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; margin: 2px 0 8px; }
+.exit.failed { color: var(--red); }
+.exit .link { color: var(--muted); font-size: 12px; padding: 1px 6px; margin-left: -6px; border-radius: var(--r-sm); }
+.exit .link:hover { color: var(--text); background: var(--surface-hover); }
+.step pre { user-select: text; -webkit-user-select: text; margin: 2px 0 8px; color: var(--text-3); font-family: var(--mono); font-size: 12px; white-space: pre-wrap; max-height: 280px; overflow: auto; }
+summary { cursor: pointer; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+.note { color: var(--muted); font-size: 13px; margin: 8px 0; }
+.note.error { color: var(--red); }
+.note.aim { display: flex; align-items: center; gap: 8px; color: var(--text-3); }
+.note.aim b { color: var(--text-2); font-weight: 500; }
+.note.restored.watch { display: block; }
+.note.restored { display: flex; align-items: center; gap: 8px; color: var(--text-3); }
+.link { color: var(--accent); font-size: 13px; padding: 1px 6px; border-radius: var(--r-sm); }
+.link:hover { background: var(--accent-bg); }
+.link.inline { padding: 0 2px; font-size: inherit; }
+.note.sign-in { display: flex; align-items: center; gap: 8px; }
+.note.sign-in .link { color: var(--text-2); white-space: nowrap; }
+/* The words under a break: one quiet sentence, its actions as plain underlined words. */
+.hint { display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap; margin: -12px 0 20px; color: var(--muted); font-size: 13px; text-align: center; }
+.hint .link { color: var(--text-3); text-decoration: underline; text-underline-offset: 2px; padding: 0 2px; }
+.hint .link:hover { color: var(--text); background: none; }
+.arrow { color: var(--muted); }
+/* A choice Hub asks for in the thread: Hub's own surface and neutral buttons. */
+.ask { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; margin: 8px 0 18px; color: var(--text-2); font-size: 14px; }
+.ask .choices { display: flex; gap: 8px; margin-top: 10px; }
+.ask .choice { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border: 1px solid var(--line-strong); border-radius: var(--r-md); color: var(--text-2); font-size: 13px; }
+.ask .choice:hover { background: var(--surface-hover); color: var(--text); }
+.note.clash { display: flex; align-items: center; gap: 8px; color: var(--amber); }
+.note.clash .mono { color: var(--text-3); }
+.note.leak { display: flex; align-items: flex-start; gap: 8px; color: var(--red); background: var(--red-bg); border-radius: var(--r-md); padding: 8px 12px; }
+.note.leak :global(svg) { margin-top: 2px; flex: none; }
+.note.customs { display: flex; align-items: flex-start; gap: 8px; color: var(--amber); background: var(--amber-bg); border-radius: var(--r-md); padding: 8px 12px; }
+.note.customs :global(svg) { margin-top: 2px; flex: none; }
+.note.customs .link { color: inherit; text-decoration: underline; margin-left: 4px; }
+.finding { color: var(--text-3); margin-top: 3px; }
+.mono { font-family: var(--mono); font-size: 12px; }
+.dim { color: var(--muted); }
+
+.watch summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px; }
+.watch summary::-webkit-details-marker { display: none; }
+.watch-text { white-space: pre-wrap; margin-top: 6px; color: var(--text-3); }

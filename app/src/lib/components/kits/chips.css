@@ -1,0 +1,11 @@
+/* The small chips under the composer: an attached file, a folder the thread can also look in.
+   Pasted into a component by a comment reading "@kit chips" in its style block (svelte.config.js). */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; position: relative; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 260px;
+  background: var(--surface-hover); border-radius: var(--r-md); padding: 3px 4px 3px 6px; font-size: 12px;
+}
+.look { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: inherit; border-radius: var(--r-sm); }
+.chip .name { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.remove { color: var(--muted); display: grid; place-items: center; padding: 2px; border-radius: var(--r-xs); }
+.remove:hover { color: var(--text); background: var(--line-strong); }

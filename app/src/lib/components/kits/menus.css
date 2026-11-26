@@ -1,0 +1,76 @@
+/* The composer's menus and the controls that open them: pills, tools, option rows, the thinking bars.
+   Pasted into a component by a comment reading "@kit menus" in its style block (svelte.config.js). */
+.grow { flex: 1; }
+
+.tool, .pill {
+  height: 28px; border-radius: var(--r-md); color: var(--muted);
+  display: inline-flex; align-items: center; gap: 4px; font-size: 13px;
+}
+.tool { padding: 0 6px; }
+/* The browser's own focus ring is a thick dark frame; a hairline is enough, and none round the
+   green mic, whose colour already says it is on. */
+.tool:focus { outline: none; }
+.tool:focus-visible { box-shadow: inset 0 0 0 1px var(--line-strong); }
+.tool.web.on { color: var(--accent); background: var(--accent-bg); font-weight: 600; }
+.pill { padding: 0 8px; color: var(--text-3); }
+.tool:hover, .pill:hover, .pill.open { background: var(--surface-hover); color: var(--text); }
+.pill :global(svg:first-child) { color: var(--muted); }
+.switch { width: 18px; height: 10px; border-radius: 999px; background: var(--line-strong); position: relative; flex: none; }
+.switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 6px; height: 6px; border-radius: 50%; background: var(--muted); transition: left 0.12s var(--ease); }
+.switch.on { background: var(--accent-bg); }
+.switch.on::after { left: 10px; background: var(--accent); }
+.option.row { align-items: center; gap: 10px; padding: 4px 10px; font-size: 14px; white-space: nowrap; }
+.option.row .grow { display: inline-flex; align-items: center; gap: 8px; }
+.tick { color: var(--accent); display: grid; }
+.option.row:disabled { opacity: 0.45; cursor: default; }
+.divider { height: 1px; background: var(--line-strong); margin: 4px 6px; }
+.blurb { color: var(--muted); font-size: 12px; line-height: 1.45; margin: 4px 10px 6px; white-space: normal; }
+.badge { font-size: 11px; color: var(--text-3); border: 1px solid var(--line-strong); border-radius: 999px; padding: 0 8px; line-height: 17px; }
+.badge.warn { color: var(--amber); border-color: rgba(221, 170, 94, 0.45); background: var(--amber-bg); }
+/* The three controls: provider and model, effort, permission. */
+/* A gap between the control groups, no line (design book: no divider where space says it). */
+.sep { width: 0; height: 14px; margin: 0 4px; flex: none; }
+.label { max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pill .label { color: var(--text-2); }
+.option.row.two { align-items: flex-start; padding: 6px 10px; }
+.option.row.two > :global(svg), .option.row.two > :global(.mark) { margin-top: 2px; flex: none; }
+.lines { display: flex !important; flex-direction: column; align-items: flex-start !important; gap: 1px !important; min-width: 0; }
+.line1 { display: inline-flex; align-items: baseline; gap: 8px; color: var(--text); font-size: 14px; }
+.line2 { color: var(--muted); font-size: 12px; white-space: normal; line-height: 1.35; }
+.eng { color: var(--muted); font-size: 12px; }
+.option.missing { opacity: 0.7; }
+.option.missing :global(svg:last-child) { color: var(--muted); margin-top: 3px; }
+.option.row.two.danger .line1 { color: var(--red); }
+.option.row.two.danger > :global(svg:first-child) { color: var(--red); }
+.modes > .option > :global(svg:first-child) { color: var(--text-3); }
+.menu.providers { min-width: 290px; }
+.menu.modes { min-width: 300px; max-width: 340px; }
+.menu.effort { min-width: 270px; max-width: 320px; }
+.menu.effort .bars { margin-right: 2px; }
+.warn { color: var(--amber); }
+
+
+.pill.on { background: var(--accent-bg); }
+.pill.on .label, .pill.on :global(svg) { color: var(--accent); }
+.pill.danger, .pill.danger :global(svg) { color: var(--red); }
+.pill.danger .label { color: var(--red); }
+.pill.danger { background: var(--red-bg); }
+.option.danger .grow { color: var(--red); }
+.bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; margin-left: 1px; }
+.bars i { width: 3px; border-radius: 1px; background: var(--line-strong); }
+.bars i.on { background: var(--text-3); }
+.menu-wrap { position: relative; }
+.menu {
+  position: absolute; z-index: 20; bottom: calc(100% + 6px);
+  background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: var(--r-lg);
+  padding: 4px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  max-height: 340px; overflow-y: auto;
+}
+.menu { left: 0; min-width: 240px; max-width: 360px; }
+.menu.right { left: auto; right: 0; }
+.menu-title { color: var(--muted); font-size: 12px; padding: 6px 8px 4px; }
+.option {
+  display: flex; align-items: flex-start; gap: 8px; width: 100%; text-align: left;
+  padding: 6px 8px; border-radius: var(--r-md); color: var(--text-2);
+}
+.option:hover, .option.active { background: var(--surface-hover); color: var(--text); }

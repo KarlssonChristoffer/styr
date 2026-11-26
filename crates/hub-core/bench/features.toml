@@ -1,0 +1,113 @@
+# The features suite: Hub's own features end to end, so a Hub change that breaks one shows up as a
+# red case. Read by `crates/hub-core/src/bench/suite.rs` (baked into hubd); the format, every check
+# word and what each case may leave behind are in docs/architecture/bench.md. Any change to this
+# file (a prompt, a fixture, a check, even this comment) is a new suite version and a new series.
+#
+# Not here: a rule saved from the chat (no agent tool saves one; it is the person's button) and a
+# push (the bench's guard refuses every push). The doc says why.
+
+suite = "features"
+engine = "claude"
+model = "fast"
+repeats = 3
+timeout_s = 600
+cost_cap_usd = 5.0
+
+[[case]]
+id = "files-in-chat"
+prompts = ["The attached receipt.txt is from my trip. How much did the taxi cost? Put only the amount, as it stands on the receipt, on the last line of your answer."]
+
+[case.attach]
+"receipt.txt" = """
+Hotel Nordic    1 night    1290.00
+Taxi            airport     412.50
+Breakfast                   145.00
+"""
+
+[case.files]
+"README.md" = "# Trip\nReceipts come in the chat; none are kept here.\n"
+
+[[case.check]]
+ended = "end_turn"
+[[case.check]]
+no_error = true
+[[case.check]]
+reply = '(?m)^\W*412\.50\W*$'
+[[case.check]]
+unchanged = ["README.md"]
+[[case.check]]
+settled = true
+
+[[case]]
+id = "side-job"
+prompts = ["Start a side job with Hub's start_side_job (kind \"quick\", context \"brief\") that reads numbers.txt in this folder and answers with the sum of its numbers. Do not add them up yourself. When its answer comes back, write that sum alone to sum.txt."]
+
+[case.files]
+"numbers.txt" = "17\n23\n58\n4\n35\n"
+
+[[case.check]]
+ended = "end_turn"
+[[case.check]]
+no_error = true
+[[case.check]]
+hub_tool = "start_side_job"
+min = 1
+[[case.check]]
+event = "child"
+matches = '"state":"done"'
+[[case.check]]
+file = "sum.txt"
+matches = '^\s*137\s*$'
+[[case.check]]
+unchanged = ["numbers.txt"]
+[[case.check]]
+settled = true
+
+[[case]]
+id = "handoff"
+needs = ["handoff_tool"]
+prompts = ["I want one of my own tools to build this change unattended: in cli.js, rename the flag --colour to --color and keep --colour working as an alias. Find a tool of mine that takes handoffs with Hub's your_tools, then offer the handoff with offer_handoff, with a note that says exactly what to change. Do not make the change yourself."]
+
+[case.files]
+"cli.js" = """
+const args = process.argv.slice(2);
+const colour = args.includes('--colour');
+console.log(colour ? 'in colour' : 'plain');
+"""
+
+[[case.check]]
+ended = "end_turn"
+[[case.check]]
+no_error = true
+[[case.check]]
+hub_tool = "offer_handoff"
+min = 1
+[[case.check]]
+event = "handoff_offer"
+matches = '"why":"(?:[^"\\]|\\.)*--color'
+[[case.check]]
+unchanged = ["cli.js"]
+[[case.check]]
+settled = true
+
+[[case]]
+id = "branch-commit"
+prompts = ["Make a branch called bench/greeting, change the greeting in hello.txt to \"Hello, Hub\", and commit it on that branch with a short message. Leave the branch checked out and do not push."]
+
+[case.files]
+"hello.txt" = "Hello, world\n"
+
+[[case.check]]
+ended = "end_turn"
+[[case.check]]
+no_error = true
+[[case.check]]
+file = ".git/HEAD"
+matches = '^ref: refs/heads/bench/greeting\s*$'
+[[case.check]]
+commits = 1
+[[case.check]]
+file = "hello.txt"
+matches = 'Hello, Hub'
+[[case.check]]
+refused_max = 0

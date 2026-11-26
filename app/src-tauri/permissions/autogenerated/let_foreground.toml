@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-let-foreground"
+description = "Enables the let_foreground command without any pre-configured scope."
+commands.allow = ["let_foreground"]
+
+[[permission]]
+identifier = "deny-let-foreground"
+description = "Denies the let_foreground command without any pre-configured scope."
+commands.deny = ["let_foreground"]

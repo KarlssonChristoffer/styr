@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-core-token"
+description = "Enables the core_token command without any pre-configured scope."
+commands.allow = ["core_token"]
+
+[[permission]]
+identifier = "deny-core-token"
+description = "Denies the core_token command without any pre-configured scope."
+commands.deny = ["core_token"]

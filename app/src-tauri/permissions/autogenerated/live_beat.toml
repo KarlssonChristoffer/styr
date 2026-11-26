@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-live-beat"
+description = "Enables the live_beat command without any pre-configured scope."
+commands.allow = ["live_beat"]
+
+[[permission]]
+identifier = "deny-live-beat"
+description = "Denies the live_beat command without any pre-configured scope."
+commands.deny = ["live_beat"]

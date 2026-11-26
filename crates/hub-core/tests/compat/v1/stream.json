@@ -1,0 +1,5 @@
+[{"type":"thread","thread":{"id":"t1","title":"Fix the login","cwd":"/work/app","engine":"claude","status":"running","engine_session_id":null,"title_locked":false,"archived":false,"created_at":1700000000000,"updated_at":1700000005000}},
+{"type":"thread_deleted","id":"t1"},
+{"type":"event","event":{"thread_id":"t1","seq":1,"ts":1700000000000,"kind":"user_message","data":{"text":"hi"}}},
+{"type":"update","status":{"version":"abc1234","state":"idle","target":null,"message":null,"checked_at":null}},
+{"type":"resync"}]
