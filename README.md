@@ -8,7 +8,9 @@ Protocol) in the background, writes everything that happens to a local log, and 
 running, what is waiting on me and what got finished. It is a personal project that I use every
 day, built largely with AI agents working under the rules in [CLAUDE.md](CLAUDE.md).
 
-The project is nowhere close to done and has a lot work left, feel free to fork and try it out. Create a new feature or fix a bug using Claude and create a PR!
+The project is nowhere close to done and has a lot of work left. Feel free to fork it and try
+it out, or build a new feature or fix a bug using Claude and open a PR! See
+[Status](#status) and [Contributing](#contributing).
 
 ![Styr: the inbox of threads on the left, a new thread on the right with the Run on menu open](docs/images/new-thread.png)
 
@@ -35,7 +37,9 @@ The app itself is called Hub. That is the name used in the code, the docs and th
 - **Workers.** Your own tools (see [the stack](#how-it-fits-with-the-rest-of-the-stack)) show
   their status, queues and buttons in the app.
 - **Self-update.** The installed app builds new commits on `main` in the background and switches
-  once no thread is working.
+  once no thread is working. This is experimental and built for developing the app itself.
+
+Many of these are unfinished. See [Status](#status).
 
 ## Architecture
 
@@ -168,12 +172,26 @@ lists and actions, running the tool's own CLI. Examples: [docs/examples/](docs/e
 
 ## Status
 
-- A personal project, in daily use by one person. It is not a product.
+Unfinished and experimental. I use it every day, but it is not a product and a lot is left to
+do.
+
+- Many features are half built or rough, and things change without notice.
+- Some parts exist for developing the app itself and are experimental: the self-update that
+  builds from `main`, and the merge, review and build rules for agents in `CLAUDE.md`.
 - Windows first. The server also runs on Linux and macOS. The phone page and the iOS client
   are a work in progress.
-- The rules in `CLAUDE.md` that the agents work under are enforced by tests
-  (`crates/hub-core/tests/it/rules.rs`).
 - A few names are Swedish (Knegarn, Forman, some scripts and doc headers).
+
+## Contributing
+
+Forks and pull requests are welcome, including ones written with Claude or another agent.
+
+- `CLAUDE.md` holds the rules the agents work under, and tests enforce them
+  (`crates/hub-core/tests/it/rules.rs`). Its sections on merging and builds describe my own
+  setup, so skip those: open the pull request and I will take it from there.
+- Run `cargo test --workspace` and `cd app && npm run check && npm test` before opening one.
+- An installed app updates itself from this repository. To follow your fork instead, install
+  with `scripts\install.ps1 -Repo https://github.com/<you>/styr`.
 
 Released under the [MIT license](LICENSE). Third-party code and assets are listed in
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
