@@ -1,7 +1,5 @@
 # Styr
-
-A desktop app for keeping track of everything your AI coding agents are doing.
-
+An agentic development environment for keeping track of everything your AI coding agents are doing.
 *Styr* is Old Norse for "to steer".
 
 Working with AI agents gets messy fast. Threads multiply, agents drift off task, and work gets
