@@ -10,10 +10,8 @@ day, built largely with AI agents working under the rules in [CLAUDE.md](CLAUDE.
 
 ![Styr: the inbox of threads on the left, a new thread on the right with the Run on menu open](docs/images/new-thread.png)
 
----
-*AI slop below this line.*
-
----
+The app itself is called Hub. That is the name used in the code, the docs and the Start menu
+(`hubd`, `hub.toml`); Styr is the name of the repository.
 
 ## What it does
 
@@ -81,7 +79,8 @@ flowchart LR
 | `app/` | The Svelte UI. `app/src-tauri` is the desktop shell. |
 | `ios/` | A SwiftUI client. |
 
-More in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/MAP.md](docs/MAP.md).
+More in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), and [docs/MAP.md](docs/MAP.md) says where
+each thing lives.
 
 ## One server on every machine
 
@@ -92,37 +91,29 @@ and shows them as one system.
 
 ![The Machines page: four machines with memory, CPU, disk and the threads running on each](docs/images/machines.png)
 
-- **Adding a machine takes one step.** For a machine your SSH config reaches, Settings >
-  Machines > Install sends the code over and installs it, with no terminal. Or run
-  `bash scripts/install-host.sh` on the machine itself (Linux or macOS). It installs `hubd` as
-  a user service (systemd, or launchd on a Mac) and prints a pairing code.
-- **Nothing is opened to the internet.** `hubd` only listens on `127.0.0.1`. Other machines
+- To add a machine your SSH config reaches, use Settings > Machines > Install. It sends the
+  code over and installs it, with no terminal. Or run `bash scripts/install-host.sh` on the
+  machine itself (Linux or macOS). Either way `hubd` is installed as a user service (systemd,
+  or launchd on a Mac) and prints a pairing code.
+- `hubd` only listens on `127.0.0.1`, so nothing is opened to the internet. Other machines
   reach it through Tailscale (`tailscale serve`, HTTPS inside your tailnet) or an SSH tunnel
   with your own keys. The tunnel is the fallback when Tailscale does not answer.
-- **Pairing, not passwords.** Make a code with `hubd pair` (or in Settings) and give it to
-  the other machine. It gets a token of its own.
-- **Set up once.** The PC hands each machine its engines and sign-ins. A machine that lacks
-  Claude Code or Codex installs it itself. New versions are sent out from the PC, so every
-  machine stays on the same build.
-- **A second Windows PC** does not compile anything: it copies the installed build from a
-  paired PC (`install.ps1 -From http://<pc>:7878 -Code ABCD-EFGH`).
+- Machines are paired with a code, not a password. Make one with `hubd pair` (or in Settings)
+  and give it to the other machine, which gets a token of its own.
+- Engines and sign-ins are set up once, on the PC, and handed to each machine. A machine that
+  lacks Claude Code or Codex installs it itself. New versions are sent out from the PC, so
+  every machine stays on the same build.
+- A second Windows PC does not compile anything. It copies the installed build from a paired
+  PC (`install.ps1 -From http://<pc>:7878 -Code ABCD-EFGH`).
 
-```mermaid
-flowchart LR
-    App["Desktop app"] --> PC["hubd on the PC"]
-    PC -->|"Tailscale or SSH tunnel"| Mac["hubd on a Mac"]
-    PC -->|"Tailscale or SSH tunnel"| Linux["hubd on a Linux box"]
-    PC -->|"Tailscale or SSH tunnel"| VPS["hubd on a VPS"]
-    Phone["Phone"] -.->|"tailnet only"| PC
-```
-
-**The phone.** Every `hubd` serves a phone page to your tailnet (pair it from a QR code in
-Settings > Access), and there is a SwiftUI client in `ios/`. Both follow and answer threads on
-all machines. They are a work in progress and do not work on iPhone right now.
+Every `hubd` also serves a phone page to your tailnet (pair it from a QR code in Settings >
+Access), and there is a SwiftUI client in `ios/`. Both follow and answer threads on all
+machines. They are a work in progress and do not work on iPhone right now.
 
 ## Install and build
 
-Windows. Needs Git, Rust (stable), Node 22+, and Claude Code installed and logged in.
+The desktop app runs on Windows. It needs Git, Rust (stable), Node 22+, and Claude Code
+installed and logged in.
 
 ```powershell
 git clone https://github.com/KarlssonChristoffer/styr.git
@@ -145,18 +136,18 @@ cargo test --workspace                 # includes end-to-end thread tests agains
 cd app && npm run check && npm test    # svelte-check and vitest
 ```
 
-Updates, a second PC, config and the mock agent: [docs/INSTALL.md](docs/INSTALL.md).
+Updates, a second PC, config and the mock agent are covered in
+[docs/INSTALL.md](docs/INSTALL.md). The rest of the documentation is indexed in
+[docs/](docs/README.md).
 
 ## How it fits with the rest of the stack
 
-This is the control surface. The other parts are separate repos:
+This is the control surface. The other parts are separate repositories, which are not public
+yet:
 
-- [Knegarn](https://github.com/KarlssonChristoffer/Knegarn) takes an approved task, builds it
-  unattended and hands back a pull request.
-- [Forman](https://github.com/KarlssonChristoffer/Forman) is the foreman over Knegarn: agenda,
-  questions and decisions.
-- [Aftermath](https://github.com/KarlssonChristoffer/Aftermath) records what actually happened
-  and compares how the work was done.
+- Knegarn takes an approved task, builds it unattended and hands back a pull request.
+- Forman is the foreman over Knegarn: agenda, questions and decisions.
+- Aftermath records what actually happened and compares how the work was done.
 
 ```mermaid
 flowchart LR
@@ -175,11 +166,12 @@ lists and actions, running the tool's own CLI. Examples: [docs/examples/](docs/e
 
 ## Status
 
-- Personal project, in daily use by one person. Not a product.
+- A personal project, in daily use by one person. It is not a product.
 - Windows first. The server also runs on Linux and macOS. The phone page and the iOS client
-  are a work in progress and do not work on iPhone right now.
-- Written largely by AI agents (Claude Code, Codex) under the rules in `CLAUDE.md`, which are
-  enforced by tests (`crates/hub-core/tests/it/rules.rs`).
+  are a work in progress.
+- The rules in `CLAUDE.md` that the agents work under are enforced by tests
+  (`crates/hub-core/tests/it/rules.rs`).
 - A few names are Swedish (Knegarn, Forman, some scripts and doc headers).
 
-Third-party code and assets: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Released under the [MIT license](LICENSE). Third-party code and assets are listed in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

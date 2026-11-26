@@ -2,13 +2,11 @@
 <!-- för: Christoffer -->
 
 The operational detail the README leaves out: installing, how updates work, a second PC, config,
-development and tests.
+development and tests. The app is called Hub throughout.
 
 ## Install (Windows)
 
 Requirements: Git, Rust (stable), Node 22+, and Claude Code installed and logged in.
-
-From a checkout of the repo:
 
 ```powershell
 git clone https://github.com/KarlssonChristoffer/styr.git
