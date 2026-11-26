@@ -14,6 +14,11 @@ it out, or build a new feature or fix a bug using Claude and open a PR! See
 
 ![Styr: the inbox of threads on the left, a new thread on the right with the Run on menu open](docs/images/new-thread.png)
 
+---
+*AI slop below this line.*
+
+---
+
 The app itself is called Hub. That is the name used in the code, the docs and the Start menu
 (`hubd`, `hub.toml`); Styr is the name of the repository.
 
@@ -100,7 +105,8 @@ and shows them as one system.
 - To add a machine your SSH config reaches, use Settings > Machines > Install. It sends the
   code over and installs it, with no terminal. Or run `bash scripts/install-host.sh` on the
   machine itself (Linux or macOS). Either way `hubd` is installed as a user service (systemd,
-  or launchd on a Mac) and prints a pairing code.
+  or launchd on a Mac). With Tailscale on the machine it also prints a pairing code for the PC;
+  without it, the PC reaches the machine through an SSH tunnel and no code is needed.
 - `hubd` only listens on `127.0.0.1`, so nothing is opened to the internet. Other machines
   reach it through Tailscale (`tailscale serve`, HTTPS inside your tailnet) or an SSH tunnel
   with your own keys. The tunnel is the fallback when Tailscale does not answer.
