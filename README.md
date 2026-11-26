@@ -9,6 +9,8 @@ Protocol) in the background, writes everything that happens to a local log, and 
 running, what is waiting on me and what got finished. It is a personal project that I use every
 day, built largely with AI agents working under the rules in [CLAUDE.md](CLAUDE.md).
 
+![Styr: the inbox of threads on the left, a new thread on the right with the Run on menu open](docs/images/new-thread.png)
+
 ---
 *AI slop below this line.*
 
@@ -26,8 +28,10 @@ day, built largely with AI agents working under the rules in [CLAUDE.md](CLAUDE.
   thread whose folder it runs in. A Stop button for stray dev servers.
 - **Projects.** Create a project from a name (folder, git, a plan in `docs/plan.md`, a GitHub
   repo if `gh` is logged in). The project page shows branch, PRs, CI, plan and threads.
-- **Other machines.** Threads on other machines running the core show up in the same list,
-  reached over Tailscale or an SSH tunnel. A phone page works over the tailnet.
+- **Every machine.** The same server (`hubd`) runs on each of your machines: Windows, Linux,
+  a Mac, a VPS. Pick where a thread runs from the composer, and every thread lands in one list.
+  See [One server on every machine](#one-server-on-every-machine).
+- **Attempts.** Run the same task up to three times at once, each in its own worktree.
 - **Take over.** Open a thread's session in the engine's own CLI, in a terminal inside the app.
 - **Workers.** Your own tools (see [the stack](#how-it-fits-with-the-rest-of-the-stack)) show
   their status, queues and buttons in the app.
@@ -40,7 +44,7 @@ day, built largely with AI agents working under the rules in [CLAUDE.md](CLAUDE.
 flowchart LR
     subgraph Surfaces
         App["Desktop app<br/>Tauri + Svelte"]
-        Phone["Phone page / iOS app"]
+        Phone["Phone page / iOS app<br/>(work in progress)"]
     end
     subgraph Core["hubd (Rust core)"]
         API["HTTP + WebSocket API<br/>127.0.0.1:7878"]
@@ -80,13 +84,50 @@ flowchart LR
 
 More in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/MAP.md](docs/MAP.md).
 
+## One server on every machine
+
+The app is only a window. The work happens in `hubd`, a small Rust server, and the same `hubd`
+runs on every machine you own. Each one runs its own threads with its own engines and log, so
+a thread on the Linux box keeps going while the PC sleeps. The PC keeps a connection to each
+and shows them as one system.
+
+![The Machines page: four machines with memory, CPU, disk and the threads running on each](docs/images/machines.png)
+
+- **Adding a machine takes one step.** For a machine your SSH config reaches, Settings >
+  Machines > Install sends the code over and installs it, with no terminal. Or run
+  `bash scripts/install-host.sh` on the machine itself (Linux or macOS). It installs `hubd` as
+  a user service (systemd, or launchd on a Mac) and prints a pairing code.
+- **Nothing is opened to the internet.** `hubd` only listens on `127.0.0.1`. Other machines
+  reach it through Tailscale (`tailscale serve`, HTTPS inside your tailnet) or an SSH tunnel
+  with your own keys. The tunnel is the fallback when Tailscale does not answer.
+- **Pairing, not passwords.** Make a code with `hubd pair` (or in Settings) and give it to
+  the other machine. It gets a token of its own.
+- **Set up once.** The PC hands each machine its engines and sign-ins. A machine that lacks
+  Claude Code or Codex installs it itself. New versions are sent out from the PC, so every
+  machine stays on the same build.
+- **A second Windows PC** does not compile anything: it copies the installed build from a
+  paired PC (`install.ps1 -From http://<pc>:7878 -Code ABCD-EFGH`).
+
+```mermaid
+flowchart LR
+    App["Desktop app"] --> PC["hubd on the PC"]
+    PC -->|"Tailscale or SSH tunnel"| Mac["hubd on a Mac"]
+    PC -->|"Tailscale or SSH tunnel"| Linux["hubd on a Linux box"]
+    PC -->|"Tailscale or SSH tunnel"| VPS["hubd on a VPS"]
+    Phone["Phone"] -.->|"tailnet only"| PC
+```
+
+**The phone.** Every `hubd` serves a phone page to your tailnet (pair it from a QR code in
+Settings > Access), and there is a SwiftUI client in `ios/`. Both follow and answer threads on
+all machines. They are a work in progress and do not work on iPhone right now.
+
 ## Install and build
 
 Windows. Needs Git, Rust (stable), Node 22+, and Claude Code installed and logged in.
 
 ```powershell
-git clone https://github.com/KarlssonChristoffer/hub.git
-cd hub
+git clone https://github.com/KarlssonChristoffer/styr.git
+cd styr
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1
 ```
 
@@ -136,7 +177,8 @@ lists and actions, running the tool's own CLI. Examples: [docs/examples/](docs/e
 ## Status
 
 - Personal project, in daily use by one person. Not a product.
-- Windows first. The core also runs on Linux (other machines). The iOS client is early.
+- Windows first. The server also runs on Linux and macOS. The phone page and the iOS client
+  are a work in progress and do not work on iPhone right now.
 - Written largely by AI agents (Claude Code, Codex) under the rules in `CLAUDE.md`, which are
   enforced by tests (`crates/hub-core/tests/it/rules.rs`).
 - A few names are Swedish (Knegarn, Forman, some scripts and doc headers).

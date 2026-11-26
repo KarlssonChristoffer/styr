@@ -12,7 +12,7 @@
 # If that PC cannot be reached or has no build for this kind of PC, this builds from source as
 # before (needs git, cargo and npm).
 param(
-    [string]$Repo = "https://github.com/KarlssonChristoffer/hub",
+    [string]$Repo = "https://github.com/KarlssonChristoffer/styr",
     [string]$Branch = "main",
     [string]$From = "",
     [string]$Code = ""

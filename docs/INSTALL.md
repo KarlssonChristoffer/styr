@@ -11,8 +11,8 @@ Requirements: Git, Rust (stable), Node 22+, and Claude Code installed and logged
 From a checkout of the repo:
 
 ```powershell
-git clone https://github.com/KarlssonChristoffer/hub.git
-cd hub
+git clone https://github.com/KarlssonChristoffer/styr.git
+cd styr
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1
 ```
 

@@ -24,7 +24,7 @@
 #                                       without a login
 set -euo pipefail
 
-REPO="${HUB_REPO:-https://github.com/KarlssonChristoffer/hub}"
+REPO="${HUB_REPO:-https://github.com/KarlssonChristoffer/styr}"
 BRANCH="${HUB_BRANCH:-main}"
 DATA="${XDG_DATA_HOME:-$HOME/.local/share}/hub"
 SRC="$DATA/src"
